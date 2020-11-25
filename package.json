@@ -1,8 +1,8 @@
 {
   "name": "effable",
   "version": "1.0.0",
-  "description": "",
-  "main": "build.js",
+  "description": "Simple static site generator.",
+  "main": "main.js",
   "scripts": {
     "debug": "node --nolazy build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
