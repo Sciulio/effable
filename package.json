@@ -21,5 +21,13 @@
     "sitemap": "^6.3.3",
     "slugify": "^1.4.6",
     "yaml": "^1.10.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sciulio/effable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sciulio/effable/issues"
+  },
+  "homepage": "https://github.com/Sciulio/effable#readme"
 }
