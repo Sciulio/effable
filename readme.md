@@ -17,12 +17,12 @@ will support (hopefully shortly) (TODO)
 ## Installation
 
 ```
-npm install effable --save-dev
+npm install @sciulio/effable --save-dev
 ```
 or maybe
 
 ```
-yarn add effable
+yarn add @sciulio/effable
 ```
 
 then import main.js then run as async func with site config:
