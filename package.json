@@ -1,5 +1,5 @@
 {
-  "name": "effable",
+  "name": "@sciulio/effable",
   "version": "1.0.0",
   "description": "Simple static site generator.",
   "main": "main.js",
