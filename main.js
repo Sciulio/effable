@@ -3,19 +3,19 @@ const { readdir, readFile, writeFile, mkdir } = require('fs').promises;
 
 require('async-extensions');
 
-const { emitHook, registerHook } = require('./utils/hooks')
-const { promisedGlob } = require("./utils/fs")
+const { emitHook, registerHook } = require('./src/utils/hooks')
+const { promisedGlob } = require("./src/utils/fs")
 
-const { mapDataFile, mapPartialFile, mapViewFile } = require('./utils/factory')
+const { mapDataFile, mapPartialFile, mapViewFile } = require('./src/utils/factory')
 
-require("./hooks/fs")
-require("./hooks/hbs")
-require("./hooks/md")
-require("./hooks/yaml")
-require("./hooks/meta")
-require("./hooks/routes")
-require("./hooks/sitemap")
-require("./hooks/assets")
+require("./src/hooks/fs")
+require("./src/hooks/hbs")
+require("./src/hooks/md")
+require("./src/hooks/yaml")
+require("./src/hooks/meta")
+require("./src/hooks/routes")
+require("./src/hooks/sitemap")
+require("./src/hooks/assets")
 
 
 const rootPath = dirname(require.main.filename || process.mainModule.filename);
