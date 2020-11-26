@@ -9,36 +9,8 @@ const { pathToProperty } = require('../utils/fs')
 
 const Handlebars = require('handlebars')
 const HandlebarsHelpers = require('handlebars-helpers')();
+require('../helpers/hbs');
 
-
-Handlebars.registerHelper('object', function({hash}) {
-  //console.log("object-----------------")
-  //console.log(hash)
-  return hash;
-})
-Handlebars.registerHelper('array', function() {
-  //console.log("array-----------------")
-  //console.log(arguments)
-  return Array.from(arguments).slice(0, arguments.length-1)
-})
-/*Handlebars.registerHelper("metadata", function(data) {
-  //console.log("metadata---------------------------")
-  //console.log(arguments)
-  //console.log(data)
-  return '';
-});*/
-Handlebars.registerHelper("entries", function(data) {
-  return Object.entries(data);
-});
-Handlebars.registerHelper("toArray", function(data) {
-  return Object.entries(data).map(([_, value]) => value);
-});
-Handlebars.registerHelper("cycleRoutes", function(data, sortBy) {
-  return Object.entries(data)
-  .map(([_, value]) => value)
-  .filter(({ isContent }) => isContent)
-  .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
-});
 
 const hooksFilter = ({ ext }) => ext === '.hbs';
 
@@ -51,6 +23,14 @@ registerHook(
   }
 );
 
+const routeFactory = (url, location, metadata, isContent = false, other = null) => ({
+  ...other,
+  ...metadata,
+  url,
+  location,
+  isContent
+})
+
 registerHook(
   'routes.render.views',
   async (route, { data, routes, config: { host } }) => {
@@ -60,23 +40,16 @@ registerHook(
       data,
       metadata,
       meta,
-      //body: contentFile ? contentFile.body || contentFile.content : null,
       body: contentFile ? contentFile.body : null,
-      route: {
-        ...metadata,
-        url,
-        location,
-        isContent: !!contentFile
-      },
-      routes: routes.reduce((prev, { url, location, metadata, isContent = false }) => set(
+      route: routeFactory(url, location, metadata, { isContent: !!contentFile }),
+      routes: routes.reduce(( prev, { url, location, metadata, isContent = false }) => set(
         prev,
-        url.replace(/\//g, '.').replace(/\\/g, '.'), {
-          ...metadata,
+        url.replace(/\//g, '.').replace(/\\/g, '.'),
+        routeFactory(url, location, metadata, {
           isContent,
-          url,
-          location
-        }), {}
-      ),
+          isCurrent: route.location.href === location.href
+        })
+      ), {}),
       host
     };
 
