@@ -23,12 +23,11 @@ registerHook(
   }
 );
 
-const routeFactory = (url, location, metadata, isContent = false, other = null) => ({
+const routeFactory = (url, location, metadata, other = null) => ({
   ...other,
   ...metadata,
   url,
-  location,
-  isContent
+  location
 })
 
 registerHook(
