@@ -67,11 +67,21 @@ Handlebars.registerHelper('route-a', function() {
   `);
 });
 
-Handlebars.registerHelper("routes-each", function(routesSet, sortBy) {
-  return Object.entries(routesSet)
+Handlebars.registerHelper("routes-each", function(routesSet, sortBy, take) {
+  const [ routesSet, sortBy = null, take = null ] = getVarArgs(arguments);
+
+  let result = Object.entries(routesSet)
   .map(([_, value]) => value)
-  .filter(({ isContent }) => isContent)
-  .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+  .filter(({ isContent }) => isContent);
+
+  if (sortBy) {
+    result = result
+    .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+  }
+  if (take) {
+    return result.slice(0, take)
+  }
+  return result;
 });
 
 Handlebars.registerHelper('urlify-route', function() {
