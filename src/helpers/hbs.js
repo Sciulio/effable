@@ -67,7 +67,7 @@ Handlebars.registerHelper('route-a', function() {
   `);
 });
 
-Handlebars.registerHelper("routes-each", function(routesSet, sortBy, take) {
+Handlebars.registerHelper("routes-each", function() {
   const [ routesSet, sortBy = null, take = null ] = getVarArgs(arguments);
 
   let result = Object.entries(routesSet)
