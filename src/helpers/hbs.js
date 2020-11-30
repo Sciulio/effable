@@ -67,12 +67,10 @@ Handlebars.registerHelper('route-a', function() {
   `);
 });
 
-Handlebars.registerHelper("routes-each", function() {
-  const [ routesSet, sortBy = null, take = null ] = getVarArgs(arguments);
-
+const each = (filter,routesSet, sortBy = null, take = null) => {
   let result = Object.entries(routesSet)
   .map(([_, value]) => value)
-  .filter(({ isContent }) => isContent);
+  .filter(filter);
 
   if (sortBy) {
     result = result
@@ -82,6 +80,14 @@ Handlebars.registerHelper("routes-each", function() {
     return result.slice(0, take)
   }
   return result;
+}
+
+Handlebars.registerHelper("routes-each", function() {
+  return each(({ isContent }) => isContent, ...getVarArgs(arguments));
+});
+
+Handlebars.registerHelper("data-each", function() {
+  return each(({ __isData }) => __isData, ...getVarArgs(arguments));
 });
 
 Handlebars.registerHelper('urlify-route', function() {

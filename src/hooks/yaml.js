@@ -18,6 +18,6 @@ registerHook(
     if (get(data, path)) {
       throw 'Multiple data with same name (different extension)!'
     }
-    set(data, path, { ...metadata });
+    set(data, path, { ...metadata, __isData: true });
   }
 );
