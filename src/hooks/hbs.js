@@ -8,9 +8,15 @@ const { emitHook, registerHook } = require('../utils/hooks')
 const { pathToProperty } = require('../utils/fs')
 
 const Handlebars = require('handlebars')
-const HandlebarsHelpers = require('handlebars-helpers')();
 require('../helpers/hbs');
 
+
+registerHook(
+  'modules.init',
+  async ({ handlebars = handlebars => handlebars }) => {
+    Handlebars = handlebars(Handlebars);
+  }
+);
 
 const hooksFilter = ({ ext }) => ext === '.hbs';
 

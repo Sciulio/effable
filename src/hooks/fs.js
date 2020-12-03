@@ -8,6 +8,21 @@ const YAML = require('yaml');
 const mdMtadataParser = require('markdown-yaml-metadata-parser');
 
 
+registerHook(
+  'modules.init',
+  async ({ yaml = yaml => yaml }) => {
+    YAML = yaml(YAML);
+  }
+);
+
+registerHook(
+  'modules.init',
+  async ({ 'markdown-yaml-metadata-parser': mymp = mymp => mymp }) => {
+    mdMtadataParser = mymp(mdMtadataParser);
+  }
+);
+
+
 const and = (...funcs) => arg => funcs.every(func => func(arg))
 const or = (...funcs) => arg => funcs.some(func => func(arg))
 const not = (func) => (...args) => !func(...args)

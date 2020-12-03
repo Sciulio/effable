@@ -8,9 +8,16 @@ const { pathToProperty } = require('../utils/fs')
 const MarkdownIt = require('markdown-it');
 
 
-const md = new MarkdownIt();
+let md; // = new MarkdownIt();
 
 const hooksFilter = ({ ext }) => ext === '.md';
+
+registerHook(
+  'modules.init',
+  async ({ 'markdown-it': markdown_it = mit => new mit() }) => {
+    md = markdown_it(MarkdownIt);
+  }
+);
 
 registerHook(
   'prepare.data',
