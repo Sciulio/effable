@@ -162,6 +162,6 @@ const routesFlat = routes => {
     ...items
   ], [])
   .filter(Boolean)
-  .filter(({ isContent }) => typeof isContent !== 'undefined');
+  .filter(({ __isContent }) => typeof __isContent !== 'undefined');
 }
 Handlebars.registerHelper('routes-flat', routesFlat)
