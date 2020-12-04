@@ -7,7 +7,7 @@ const { set } = require('lodash');
 const { emitHook, registerHook } = require('../utils/hooks')
 const { pathToProperty } = require('../utils/fs')
 
-const Handlebars = require('handlebars')
+let Handlebars = require('handlebars')
 require('../helpers/hbs');
 
 
