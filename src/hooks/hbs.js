@@ -14,7 +14,7 @@ require('../helpers/hbs');
 registerHook(
   'modules.init',
   async ({ handlebars = handlebars => handlebars }) => {
-    Handlebars = handlebars(Handlebars);
+    Handlebars = handlebars(Handlebars) || Handlebars;
   }
 );
 

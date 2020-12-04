@@ -11,14 +11,14 @@ let mdMtadataParser = require('markdown-yaml-metadata-parser');
 registerHook(
   'modules.init',
   async ({ yaml = yaml => yaml }) => {
-    YAML = yaml(YAML);
+    YAML = yaml(YAML) || YAML;
   }
 );
 
 registerHook(
   'modules.init',
   async ({ 'markdown-yaml-metadata-parser': mymp = mymp => mymp }) => {
-    mdMtadataParser = mymp(mdMtadataParser);
+    mdMtadataParser = mymp(mdMtadataParser) || mdMtadataParser;
   }
 );
 
