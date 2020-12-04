@@ -8,11 +8,26 @@ const YAML = require('yaml');
 const mdMtadataParser = require('markdown-yaml-metadata-parser');
 
 
+registerHook(
+  'modules.init',
+  async ({ yaml = yaml => yaml }) => {
+    YAML = yaml(YAML);
+  }
+);
+
+registerHook(
+  'modules.init',
+  async ({ 'markdown-yaml-metadata-parser': mymp = mymp => mymp }) => {
+    mdMtadataParser = mymp(mdMtadataParser);
+  }
+);
+
+
 const and = (...funcs) => arg => funcs.every(func => func(arg))
 const or = (...funcs) => arg => funcs.some(func => func(arg))
 const not = (func) => (...args) => !func(...args)
 
-const filterContentWithMetadata = ({ content }) => content.substr(0, 3) == '---'
+const filterContentWithMetadata = ({ content }) => content.substr(0, 3) == '---' // TODO secondary '---'
 const filterYaml = ({ ext }) => ext === '.yaml'
 
 registerHook(
@@ -22,6 +37,7 @@ registerHook(
   }
 );
 
+// TODO: move YAML and mdMtadataParser in separate files and add registerDefaultHook(...) event register (called when no other handler had been call)
 registerHook([
     'file.read.metadata.data',
     'file.read.metadata.partials',

@@ -11,6 +11,13 @@ const Handlebars = require('handlebars')
 require('../helpers/hbs');
 
 
+registerHook(
+  'modules.init',
+  async ({ handlebars = handlebars => handlebars }) => {
+    Handlebars = handlebars(Handlebars);
+  }
+);
+
 const hooksFilter = ({ ext }) => ext === '.hbs';
 
 registerHook(

@@ -39,24 +39,36 @@ config arg ex.
 }
 */
 
-module.exports = async (config) => {
+module.exports = async ({
+  paths,
+  host
+}, options) => {
+  const config = {
+    paths,
+    host
+  };
+
   const ctx = {
     config,
     files: {
       data: await ([
-        ...await promisedGlob(resolve(config.paths.data, '**/*.md')),
-        ...await promisedGlob(resolve(config.paths.data, '**/*.yaml'))
+        ...await promisedGlob(resolve(paths.data, '**/*.md')),
+        ...await promisedGlob(resolve(paths.data, '**/*.yaml'))
       ])
-      .mapAsync(path => mapDataFile(config.paths.data, path)),
-      partials: await (await promisedGlob(resolve(config.paths.partials, '**/*.hbs')))
-      .mapAsync(path => mapPartialFile(config.paths.partials, path)),
-      views: await (await promisedGlob(resolve(config.paths.views, '**/*.hbs')))
-      .mapAsync(path => mapViewFile(config.paths.views, path))
+      .mapAsync(path => mapDataFile(paths.data, path)),
+      partials: await (await promisedGlob(resolve(paths.partials, '**/*.hbs')))
+      .mapAsync(path => mapPartialFile(paths.partials, path)),
+      views: await (await promisedGlob(resolve(paths.views, '**/*.hbs')))
+      .mapAsync(path => mapViewFile(paths.views, path))
     },
     routes: [],
     data: {},
     sitemap: []
   }
+
+  
+  await emitHook('modules.init', options, ctx);
+  
   
   await Promise.all([
       ...ctx.files.data,
