@@ -2,7 +2,9 @@ const { resolve, join, relative, sep, extname, basename, dirname } = require('pa
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
 const { get, set } = require('lodash')
-const { emitHook, registerHook } = require('../utils/hooks')
+
+const { filterByExt } = require('../utils/bfunctional')
+const { registerHook } = require('../utils/hooks')
 const { pathToProperty } = require('../utils/fs')
 
 const MarkdownIt = require('markdown-it');
@@ -10,7 +12,7 @@ const MarkdownIt = require('markdown-it');
 
 let md; // = new MarkdownIt();
 
-const hooksFilter = ({ ext }) => ext === '.md';
+const hooksFilter = filterByExt('.md');
 
 registerHook(
   'modules.init',

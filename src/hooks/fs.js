@@ -1,7 +1,7 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
-const { existsSync } = require('fs');
 
+const { and, not, filterByExt } = require('../utils/bfunctional')
 const { emitHook, registerHook } = require('../utils/hooks')
 
 let YAML = require('yaml');
@@ -23,12 +23,11 @@ registerHook(
 );
 
 
-const and = (...funcs) => arg => funcs.every(func => func(arg))
-const or = (...funcs) => arg => funcs.some(func => func(arg))
-const not = (func) => (...args) => !func(...args)
-
-const filterContentWithMetadata = ({ content }) => content.substr(0, 3) == '---' // TODO secondary '---'
-const filterYaml = ({ ext }) => ext === '.yaml'
+const filterContentWithMetadata = and(
+  ({ content }) => content.substr(0, 3) == '---',
+  ({ content }) => /^---$/m.test(content.substr(4))
+)
+const filterYaml = filterByExt('.yaml')
 
 registerHook(
   'file.read.content',

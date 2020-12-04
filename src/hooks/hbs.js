@@ -4,7 +4,8 @@ const { existsSync } = require('fs');
 
 const { set } = require('lodash');
 
-const { emitHook, registerHook } = require('../utils/hooks')
+const { filterByExt } = require('../utils/bfunctional')
+const { registerHook } = require('../utils/hooks')
 const { pathToProperty } = require('../utils/fs')
 
 let Handlebars = require('handlebars')
@@ -18,7 +19,7 @@ registerHook(
   }
 );
 
-const hooksFilter = ({ ext }) => ext === '.hbs';
+const hooksFilter = filterByExt('.hbs');
 
 registerHook(
   'prepare.partials',

@@ -2,11 +2,13 @@ const { resolve, join, relative, sep, extname, basename, dirname } = require('pa
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
 const { set, get, merge } = require('lodash')
-const { emitHook, registerHook } = require('../utils/hooks')
+
+const { filterByExt } = require('../utils/bfunctional')
+const { registerHook } = require('../utils/hooks')
 const { pathToProperty } = require('../utils/fs')
 
 
-const hooksFilter = ({ ext }) => ext === '.yaml';
+const hooksFilter = filterByExt('.yaml');
 
 registerHook(
   'prepare.data',

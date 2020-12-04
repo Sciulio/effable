@@ -39,6 +39,7 @@ config arg ex.
 }
 */
 
+// TODO: add config for defaults for seo and others
 module.exports = async ({
   paths,
   host
