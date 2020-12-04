@@ -144,3 +144,24 @@ Handlebars.registerHelper('extract', function() {
 Handlebars.registerHelper('extract-many', function() {
   return extract(getVarArgs(arguments), true);
 })
+
+const routesFlat = routes => {
+  return Object.entries(routes)
+  .map(([ key, value ]) => {
+    const result = [
+      value
+    ];
+
+    if (value && typeof value === 'object') {
+      result.push(...routesFlat(value))
+    }
+    return result;
+  })
+  .reduce((list, items) => [
+    ...list,
+    ...items
+  ], [])
+  .filter(Boolean)
+  .filter(({ isContent }) => typeof isContent !== 'undefined');
+}
+Handlebars.registerHelper('routes-flat', routesFlat)
