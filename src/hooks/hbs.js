@@ -47,12 +47,12 @@ registerHook(
       metadata,
       meta,
       body: contentFile ? contentFile.body : null,
-      route: routeFactory(url, location, metadata, { isContent: !!contentFile }),
-      routes: routes.reduce(( prev, { url, location, metadata, isContent = false }) => set(
+      route: routeFactory(url, location, metadata, { __isContent: !!contentFile }),
+      routes: routes.reduce(( prev, { url, location, metadata, __isContent = false }) => set(
         prev,
         url.replace(/\//g, '.').replace(/\\/g, '.'),
         routeFactory(url, location, metadata, {
-          isContent,
+          __isContent,
           isCurrent: route.location.href === location.href
         })
       ), {}),

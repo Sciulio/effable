@@ -39,7 +39,7 @@ registerHook(
       .push(
         ...dataIoFiles
         .map(dataIoFile => generateRoute(folder, dataIoFile.name, {
-          isContent: true,
+          __isContent: true,
           contentFile: dataIoFile
         }))
       );

@@ -83,7 +83,7 @@ const each = (filter,routesSet, sortBy = null, take = null) => {
 }
 
 Handlebars.registerHelper("routes-each", function() {
-  return each(({ isContent }) => isContent, ...getVarArgs(arguments));
+  return each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
 });
 
 Handlebars.registerHelper("data-each", function() {
