@@ -4,8 +4,8 @@ const { existsSync } = require('fs');
 
 const { emitHook, registerHook } = require('../utils/hooks')
 
-const YAML = require('yaml');
-const mdMtadataParser = require('markdown-yaml-metadata-parser');
+let YAML = require('yaml');
+let mdMtadataParser = require('markdown-yaml-metadata-parser');
 
 
 registerHook(
