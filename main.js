@@ -42,11 +42,13 @@ config arg ex.
 // TODO: add config for defaults for seo and others
 module.exports = async ({
   paths,
-  host
+  host,
+  helpers
 }, options) => {
   const config = {
     paths,
-    host
+    host,
+    helpers
   };
 
   const ctx = {
@@ -100,13 +102,6 @@ module.exports = async ({
     })
   );
   
-  await Promise.all(
-    ctx.files.views
-    .map(async ioFile => {
-      await emitHook('routes.generate', ioFile, ctx)
-    })
-  );
-  
   await Promise.all([
       ...ctx.files.data,
       ...ctx.files.partials,
@@ -126,6 +121,13 @@ module.exports = async ({
     ctx.files.partials
     .map(async ioFile => {
       await emitHook('prepare.partials', ioFile, ctx)
+    })
+  );
+  
+  await Promise.all(
+    ctx.files.views
+    .map(async ioFile => {
+      await emitHook('routes.generate', ioFile, ctx)
     })
   );
 

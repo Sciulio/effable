@@ -97,18 +97,18 @@ const extrapolateSet = (props, metadata, preUrl) => props
   // todo
   metadata[prop] = new URL(metadata[prop], preUrl).toString();
 });
+
 registerHook(
   'prepare.metadata',
   async ({ metadata }, { config: { host: { baseUrl, resxUrl } }}) => {
     extrapolateSet(['canonical'], metadata, baseUrl);
     extrapolateSet(['image'], metadata, resxUrl);
-    console.log(metadata)
   }
 );
 
 registerHook(
   'routes.generate.meta',
-  async (route, { data }) => {
+  async (route) => {
     const { contentFile, templateFile } = route;
 
     const metadata = merge(
