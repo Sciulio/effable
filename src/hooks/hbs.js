@@ -40,13 +40,17 @@ const routeFactory = (url, location, metadata, other = null) => ({
 registerHook(
   'routes.render.views',
   async (route, { data, routes, config: { host } }) => {
-    const { url, location, metadata, meta, contentFile, templateFile } = route;
+    const { url, location, metadata, meta, contentFile, templateFile, contentData } = route;
 
     const context = {
       data,
+      content: contentData,
+
       metadata,
       meta,
+
       body: contentFile ? contentFile.body : null,
+
       route: routeFactory(url, location, metadata, { __isContent: !!contentFile }),
       routes: routes.reduce(( prev, { url, location, metadata, __isContent = false }) => set(
         prev,
@@ -56,6 +60,7 @@ registerHook(
           isCurrent: route.location.href === location.href
         })
       ), {}),
+
       host
     };
 

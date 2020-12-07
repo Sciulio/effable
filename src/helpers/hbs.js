@@ -3,6 +3,7 @@ const Handlebars = require('handlebars')
 const { parse } = require("url");
 const { get } = require('lodash');
 
+const routesHelper = require('./routes');
 
 // https://stackoverflow.com/a/37511463
 const normalizeWord = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -44,7 +45,7 @@ Handlebars.registerHelper('route-isCurrent', function(activeClasses, relUrl) {
   return isCurrent;
 });
 Handlebars.registerHelper('route-isRelative', function(activeClasses, ...relUrls) {
-  const { route: { location }, host: { baseUrl } } = getRootData(arguments); // this;
+  const { route: { location }, host: { baseUrl } } = getRootData(arguments);
 
   return relUrls
   .splice(0, relUrls.length - 1)
@@ -54,7 +55,7 @@ Handlebars.registerHelper('route-isRelative', function(activeClasses, ...relUrls
   }) ? activeClasses : '';
 });
 Handlebars.registerHelper('route-a', function() {
-  const { route: { location }, host: { baseUrl } } = getRootData(arguments); // this;
+  const { route: { location }, host: { baseUrl } } = getRootData(arguments);
   const [ relUrl, title, activeClasses = '', additionalClasses = '', attrs = '' ] = getVarArgs(arguments); // [...arguments].splice(0, arguments.length - 1)
 
   const url = new URL(relUrl, baseUrl);
@@ -67,32 +68,20 @@ Handlebars.registerHelper('route-a', function() {
   `);
 });
 
-const each = (filter,routesSet, sortBy = null, take = null) => {
-  let result = Object.entries(routesSet)
-  .map(([_, value]) => value)
-  .filter(filter);
-
-  if (sortBy) {
-    result = result
-    .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
-  }
-  if (take) {
-    return result.slice(0, take)
-  }
-  return result;
-}
-
 Handlebars.registerHelper("routes-each", function() {
-  return each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
+  return routesHelper['routes-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
 });
 
 Handlebars.registerHelper("data-each", function() {
-  return each(({ __isData }) => __isData, ...getVarArgs(arguments));
+  return routesHelper['data-each'](...getVarArgs(arguments));
 });
+
+Handlebars.registerHelper('routes-flat', routesHelper['routes-flat']);
 
 Handlebars.registerHelper('urlify-route', function() {
   const { host: { baseUrl } } = getRootData(arguments)
   const urlParts = getVarArgs(arguments)
+
   const url = parse(urlParts.map(normalizeWord).join('/')).href + '.html';
   return new URL(url, baseUrl);
 })
@@ -104,7 +93,7 @@ Handlebars.registerHelper('urlify-route', function() {
   return new URL(url, resxUrl);
 })*/
 
-const extract = ([ data, property, compareProperty = null], isMany = false) => {
+const extract = (data, property, compareProperty = null, isMany = false) => {
   let result = Array.isArray(data) ? data : Object.entries(data)
   .map(([_, value]) => value);
 
@@ -138,30 +127,11 @@ const extract = ([ data, property, compareProperty = null], isMany = false) => {
 }
 
 Handlebars.registerHelper('extract', function() {
-  return extract(getVarArgs(arguments));
+  return extract(...getVarArgs(arguments));
 })
 
 Handlebars.registerHelper('extract-many', function() {
-  return extract(getVarArgs(arguments), true);
+  const { data } = getRootData(arguments)
+  return routesHelper["data-extract"](data, ...getVarArgs(arguments))
+  //return extract(...getVarArgs(arguments), true);
 })
-
-const routesFlat = routes => {
-  return Object.entries(routes)
-  .map(([ key, value ]) => {
-    const result = [
-      value
-    ];
-
-    if (value && typeof value === 'object') {
-      result.push(...routesFlat(value))
-    }
-    return result;
-  })
-  .reduce((list, items) => [
-    ...list,
-    ...items
-  ], [])
-  .filter(Boolean)
-  .filter(({ __isContent }) => typeof __isContent !== 'undefined');
-}
-Handlebars.registerHelper('routes-flat', routesFlat)
