@@ -37,7 +37,7 @@ module.exports = {
   emitHook: async (name, ...args) => {
     return Promise.all(
       hooks[name]
-      .filter(([filter, _]) => filter == null || filter(...args))
+      .filter(([filter, _]) => !filter || filter(...args))
       .map(([_, hook]) => hook(...args))
       /*
       match(name)
