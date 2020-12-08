@@ -1,16 +1,14 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
-const { existsSync } = require('fs');
 
-const { emitHook, registerHook } = require('../utils/hooks')
-const { promisedGlob } = require("../utils/fs")
+const { carry } = require('../utils/bfunctional')
+const { registerHook } = require('../utils/hooks')
 
 const { SitemapStream, streamToPromise } = require( 'sitemap' )
 const { Readable } = require( 'stream' )
 
-const slugify = require('slugify')
 
-
+const siteMapEnabled = ({ config: { options: { siteMap = true } } }) => siteMap;
 const takeHigher = (...tsList) => tsList
 .filter(Boolean)
 .sort()[0]
@@ -18,6 +16,7 @@ const convertIoTimestamp = tsMs => tsMs; // new Date(tsMs).toString("yyyy-MM-dd"
 
 registerHook(
   'routes.finale',
+  carry(siteMapEnabled),
   async (route, { files: { data }, routes, config: { paths: { views: pathViews, data: pathData }} }) => {
     const {
       url,
@@ -47,6 +46,7 @@ registerHook(
 
 registerHook(
   'context.finale',
+  siteMapEnabled,
   async ctx => {
     const { routes, config: { host: { baseUrl } }} = ctx;
 
@@ -68,6 +68,7 @@ registerHook(
 
 registerHook(
   'context.io.persist',
+  siteMapEnabled,
   async ctx => {
     const { siteMap, config: { paths: { out } } } = ctx;
     

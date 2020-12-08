@@ -43,13 +43,18 @@ config arg ex.
 module.exports = async ({
   paths,
   host,
+  options,
   helpers
-}, options) => {
+}, initialization) => {
   const config = {
     paths,
     host,
+    options,
     helpers
   };
+
+  console.log("Configuration:")
+  console.log(config)
 
   const ctx = {
     config,
@@ -70,8 +75,7 @@ module.exports = async ({
   }
 
   
-  await emitHook('modules.init', options, ctx);
-  
+  await emitHook('modules.init', initialization, ctx);
   
   await Promise.all([
       ...ctx.files.data,
