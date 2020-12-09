@@ -50,14 +50,14 @@ registerHook([
 );
 
 registerHook([
-    'file.read.metadata.data',
-//    'file.read.metadata.partials',
-//    'file.read.metadata.views'
+    'file.read.metadata.data'
   ],
   //todo 'file.read.metadata.*',
   filterYaml,
   async (ioFile) => {
-    ioFile.metadata = YAML.parse(ioFile.content);
+    const metadata = YAML.parse(ioFile.content);
+
+    ioFile.metadata = metadata;
     ioFile.body = undefined;
   }
 );

@@ -1,7 +1,4 @@
-const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
-const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
-
-const { set, get, merge } = require('lodash')
+const { set, get } = require('lodash')
 
 const { filterByExt } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')

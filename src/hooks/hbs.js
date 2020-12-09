@@ -43,13 +43,9 @@ registerHook(
     const { url, location, metadata, meta, contentFile, templateFile, contentData } = route;
 
     const context = {
+      host,
+
       data,
-      content: contentData,
-
-      metadata,
-      meta,
-
-      body: contentFile ? contentFile.body : null,
 
       route: routeFactory(url, location, metadata, { __isContent: !!contentFile }),
       routes: routes.reduce(( prev, { url, location, metadata, __isContent = false }) => set(
@@ -60,8 +56,12 @@ registerHook(
           isCurrent: route.location.href === location.href
         })
       ), {}),
+      
+      body: contentFile ? contentFile.body : null,
+      content: contentData,
 
-      host
+      metadata,
+      meta
     };
 
     const compiled = Handlebars.compile(templateFile.body || templateFile.content);
