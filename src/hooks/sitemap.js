@@ -1,7 +1,7 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
-const { carry } = require('../utils/bfunctional')
+const { carry, higher } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')
 
 const { SitemapStream, streamToPromise } = require( 'sitemap' )
@@ -9,9 +9,6 @@ const { Readable } = require( 'stream' )
 
 
 const siteMapEnabled = ({ config: { options: { siteMap = true } } }) => siteMap;
-const takeHigher = (...tsList) => tsList
-.filter(Boolean)
-.sort()[0]
 const convertIoTimestamp = tsMs => tsMs; // new Date(tsMs).toString("yyyy-MM-dd").split("T")[0];
 
 registerHook(
@@ -29,7 +26,7 @@ registerHook(
       metadata: {
         changefreq = 'monthly',
         priority = 0.8,
-        lastmod = convertIoTimestamp(takeHigher(templateFile.editedOn, contentFile && contentFile.editedOn))
+        lastmod = convertIoTimestamp(higher(templateFile.editedOn, contentFile && contentFile.editedOn))
       }
     } = route;
 

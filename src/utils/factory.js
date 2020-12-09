@@ -1,11 +1,8 @@
 const { resolve, normalize, join, relative, sep, extname, basename, dirname } = require('path');
 const { readdir, readFile, writeFile, mkdir, stat } = require('fs').promises;
 
+const { higher } = require('./bfunctional')
 
-
-const min = (...args) => args
-.filter(Boolean)
-.sort()[0]
 
 async function mapGlobFile(from, path) {
   const fileStat = await stat(path)
@@ -18,8 +15,7 @@ async function mapGlobFile(from, path) {
     ext: extname(path),
     size: fileStat.size,
     createdOn: fileStat.birthtimeMs,
-    editedOn: min(fileStat.mtimeMs, fileStat.ctimeMs, fileStat.birthtimeMs),
-    stat: fileStat
+    editedOn: higher(fileStat.mtimeMs, fileStat.ctimeMs, fileStat.birthtimeMs)
   }
 }
 
