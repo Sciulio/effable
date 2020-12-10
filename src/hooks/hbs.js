@@ -2,15 +2,24 @@ const { resolve, join, relative, sep, extname, basename, dirname } = require('pa
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 const { existsSync } = require('fs');
 
-const { set } = require('lodash');
+const { set, get } = require('lodash');
 
 const { filterByExt } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')
-const { pathToProperty } = require('../utils/fs')
+const { pathToProperty, urlToPath } = require('../utils/fs')
 
 let Handlebars = require('handlebars')
 require('../helpers/hbs');
 
+
+const hooksFilter = filterByExt('.hbs');
+
+const tinyRouteFactory = ({ url, location, metadata, __isContent = false }) => ({
+  ...metadata,
+  __isContent,
+  url,
+  location
+});
 
 registerHook(
   'modules.init',
@@ -19,43 +28,41 @@ registerHook(
   }
 );
 
-const hooksFilter = filterByExt('.hbs');
-
 registerHook(
   'prepare.partials',
   hooksFilter,
   async ({ name, folder, content }) => {
-    const fullName = pathToProperty(folder, name); // .replace(/\./g, '_');
+    const fullName = pathToProperty(folder, name);
     Handlebars.registerPartial(fullName, content)
   }
 );
 
-const routeFactory = (url, location, metadata, other = null) => ({
-  ...other,
-  ...metadata,
-  url,
-  location
-})
+registerHook(
+  'routes.prologo',
+  async ctx => {
+    const { routes } = ctx;
+
+    ctx.routesSet = routes.map(tinyRouteFactory)
+    .reduce((tinyRoutesSet, tinyRoute) => set(
+      tinyRoutesSet,
+      urlToPath(tinyRoute.url),
+      tinyRoute
+    ), {});
+  }
+);
 
 registerHook(
   'routes.render.views',
-  async (route, { data, routes, config: { host } }) => {
-    const { url, location, metadata, meta, contentFile, templateFile, contentData } = route;
+  async (route, { data, routesSet, config: { host } }) => {
+    const { url, metadata, meta, contentFile, templateFile, contentData } = route;
 
     const context = {
       host,
 
       data,
 
-      route: routeFactory(url, location, metadata, { __isContent: !!contentFile }),
-      routes: routes.reduce(( prev, { url, location, metadata, __isContent = false }) => set(
-        prev,
-        url.replace(/\//g, '.').replace(/\\/g, '.'),
-        routeFactory(url, location, metadata, {
-          __isContent,
-          isCurrent: route.location.href === location.href
-        })
-      ), {}),
+      routes: routesSet,
+      route: get(routesSet, urlToPath(url)),
       
       body: contentFile ? contentFile.body : null,
       content: contentData,
@@ -64,7 +71,9 @@ registerHook(
       meta
     };
 
-    const compiled = Handlebars.compile(templateFile.body || templateFile.content);
+    const template = templateFile.body || templateFile.content;
+    const compiled = Handlebars.compile(template);
+
     route.html = compiled(context);
   }
 );

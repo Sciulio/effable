@@ -13,5 +13,6 @@ module.exports = {
   },
   pathToProperty(...pathList) {
     return join(...pathList).replace(/[\\/]/g, '.');
-  }
+  },
+  urlToPath: url => url.replace(/\//g, '.').replace(/\\/g, '.')
 };

@@ -142,6 +142,9 @@ module.exports = async ({
     })
   );
 
+
+  await emitHook('routes.prologo', ctx)
+
   await Promise.all(
     ctx.routes
     .map(async route => {
@@ -160,6 +163,5 @@ module.exports = async ({
   await emitHook('context.io.persist', ctx)
 
 
-  console.log('\nconfig -----------------------')
-  console.log(config)
+  console.log('\nSuccess!')
 };
