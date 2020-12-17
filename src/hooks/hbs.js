@@ -29,7 +29,7 @@ registerHook(
 );
 
 registerHook(
-  'prepare.partials',
+  'files.partials.generate',
   hooksFilter,
   async ({ name, folder, content }) => {
     const fullName = pathToProperty(folder, name);

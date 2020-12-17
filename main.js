@@ -113,19 +113,33 @@ module.exports = async ({
       ...ctx.files.views
     ]
     .map(async ioFile => {
-      await emitHook('prepare.metadata', ioFile, ctx)
+      await emitHook('files.all.metadata', ioFile, ctx)
     })
   );
+
   await Promise.all(
     ctx.files.data
     .map(async ioFile => {
-      await emitHook('prepare.data', ioFile, ctx)
+      await emitHook('files.data.prepare', ioFile, ctx)
     })
   );
   await Promise.all(
     ctx.files.partials
     .map(async ioFile => {
-      await emitHook('prepare.partials', ioFile, ctx)
+      await emitHook('files.partials.prepare', ioFile, ctx)
+    })
+  );
+
+  await Promise.all(
+    ctx.files.data
+    .map(async ioFile => {
+      await emitHook('files.data.generate', ioFile, ctx)
+    })
+  );
+  await Promise.all(
+    ctx.files.partials
+    .map(async ioFile => {
+      await emitHook('files.partials.generate', ioFile, ctx)
     })
   );
   

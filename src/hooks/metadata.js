@@ -23,7 +23,7 @@ example:
 */
 
 registerHook(
-  'prepare.metadata',
+  'files.all.metadata',
   async ({ metadata }, { config: { host: { baseUrl, resxUrl } }}) => {
     extrapolateUrls(['canonical'], metadata, baseUrl);
     extrapolateUrls(['image'], metadata, resxUrl);

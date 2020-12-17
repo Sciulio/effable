@@ -2,6 +2,7 @@ const { resolve, join, relative, sep, extname, basename, dirname } = require('pa
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
 const { and, not, filterByExt } = require('../utils/bfunctional')
+const { pathToProperty } = require('../utils/fs')
 const { emitHook, registerHook } = require('../utils/hooks')
 
 let YAML = require('yaml');
@@ -31,6 +32,7 @@ const filterYaml = filterByExt('.yaml')
 
 registerHook(
   'file.read.content',
+  //todo: not .js files
   async (ioFile) => {
     ioFile.content = (await readFile(ioFile.path)).toString()
   }
@@ -73,6 +75,24 @@ registerHook([
 
     ioFile.metadata = metadata;
     ioFile.body = content;
+  }
+);
+
+registerHook(
+  'files.data.prepare',
+  async (ioFile) => {
+    const { name, folder } = ioFile;
+    
+    ioFile.prop = pathToProperty(folder, name);
+  }
+);
+
+registerHook(
+  'files.partials.prepare',
+  async (ioFile) => {
+    const { name, folder } = ioFile;
+    
+    ioFile.prop = pathToProperty(folder, name);
   }
 );
 

@@ -5,7 +5,6 @@ const { get, set } = require('lodash')
 
 const { filterByExt } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')
-const { pathToProperty } = require('../utils/fs')
 
 const MarkdownIt = require('markdown-it');
 
@@ -22,20 +21,19 @@ registerHook(
 );
 
 registerHook(
-  'prepare.data',
+  'files.data.generate',
   hooksFilter,
   async (ioFile, { config: { paths: { data: pathData } }, data }) => {
-    const { name, folder } = ioFile;
-    let { body, metadata } = ioFile;
-    const path = pathToProperty(folder, name);
+    const { prop, metadata } = ioFile;
+    let { body } = ioFile;
 
     body = md.render(body);
     
     ioFile.body = body;
 
-    if (get(data, path)) {
+    if (get(data, prop)) {
       throw 'Multiple data with same name (different extension)!'
     }
-    set(data, path, { ...metadata, body, __isData: true });
+    set(data, prop, { ...metadata, body, __isData: true });
   }
 );
