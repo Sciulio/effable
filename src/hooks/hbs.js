@@ -33,7 +33,7 @@ registerHook(
   hooksFilter,
   async ({ name, folder, content }) => {
     const fullName = pathToProperty(folder, name);
-    Handlebars.registerPartial(fullName, content)
+    Handlebars.registerPartial(fullName, content);
   }
 );
 

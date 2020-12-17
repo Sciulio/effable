@@ -12,7 +12,8 @@ require("./src/hooks/fs")
 require("./src/hooks/hbs")
 require("./src/hooks/md")
 require("./src/hooks/yaml")
-require("./src/hooks/meta")
+require("./src/hooks/metadata")
+require("./src/hooks/meta") // todo: as pluggable
 require("./src/hooks/routes")
 require("./src/hooks/sitemap")
 require("./src/hooks/assets")
@@ -132,6 +133,13 @@ module.exports = async ({
     ctx.files.views
     .map(async ioFile => {
       await emitHook('routes.generate', ioFile, ctx)
+    })
+  );
+
+  await Promise.all(
+    ctx.routes
+    .map(async route => {
+      await emitHook('routes.generate.metadata', route, ctx)
     })
   );
 

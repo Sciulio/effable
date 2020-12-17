@@ -1,17 +1,8 @@
-const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
-const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
-const { URL } = require('url')
-
 const { merge } = require('lodash');
 
-const { emitHook, registerHook } = require('../utils/hooks')
+const { through } = require('../utils/bfunctional')
+const { registerHook } = require('../utils/hooks')
 
-
-const reduceMetadata = (tags) => metadata => tags
-.reduce((tagsSet, meta) => ({
-  ...tagsSet,
-  [meta]: metadata[meta]
-}), {});
 
 const generateSeoTags = ({ url, location }, { title, slug, description, locale, canonical, author, copyright, keywords }) => ({
   name: {
@@ -88,45 +79,21 @@ const generateConfigTags = ({ url }, { robots, viewport, charset, locale }) => {
   }
 }
 
-const isAbsoluteUrl = url => url.indexOf('http') == 0;
-const extrapolateSet = (props, metadata, preUrl) => props
-.map(prop => [prop, metadata[prop]])
-.filter(([prop, value]) => prop in metadata && typeof value !== 'undefined' && value !== null)
-.filter(([prop, value]) => !isAbsoluteUrl(value))
-.forEach(([prop, value]) => {
-  // todo
-  metadata[prop] = new URL(metadata[prop], preUrl).toString();
-});
-
-registerHook(
-  'prepare.metadata',
-  async ({ metadata }, { config: { host: { baseUrl, resxUrl } }}) => {
-    extrapolateSet(['canonical'], metadata, baseUrl);
-    extrapolateSet(['image'], metadata, resxUrl);
-  }
-);
-
 registerHook(
   'routes.generate.meta',
   async (route) => {
-    const { contentFile, templateFile } = route;
-
-    const metadata = merge(
+    const { metadata } = route;
+    
+    route.meta = merge(
       {},
-      templateFile.metadata,
-      contentFile ? contentFile.metadata : null
+      ...through(
+        generateSeoTags,
+        generateOpenGraphTags,
+        generateTwitterTags,
+        generateFbTags,
+        generateCacheTags,
+        generateConfigTags
+      )(route, metadata)
     );
-    const meta = merge(
-      {},
-      generateSeoTags(route, metadata),
-      generateOpenGraphTags(route, metadata),
-      generateTwitterTags(route, metadata),
-      generateFbTags(route, metadata),
-      generateCacheTags(route, metadata),
-      generateConfigTags(route, metadata)
-    );
-
-    route.metadata = metadata;
-    route.meta = meta;
   }
 );
