@@ -1,4 +1,4 @@
-const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
+const { resolve, join, relative, sep, extname, basename, dirname, parse } = require('path');
 
 const glob = require("glob")
 
@@ -14,5 +14,9 @@ module.exports = {
   pathToProperty(...pathList) {
     return join(...pathList).replace(/[\\/]/g, '.');
   },
-  urlToPath: url => url.replace(/\//g, '.').replace(/\\/g, '.')
+  //urlToPath: url => parse(url).name.replace(/\//g, '.').replace(/\\/g, '.')
+  urlToPath: url => url
+  .replace(new RegExp(extname(url) + '$', 'i'), '')
+  .replace(/\//g, '.')
+  .replace(/\\/g, '.')
 };
