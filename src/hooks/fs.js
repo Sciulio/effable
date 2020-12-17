@@ -79,7 +79,7 @@ registerHook([
 registerHook(
   'routes.io.persist',
   async ({ url, html }, { config: { paths: { out } }}) => {
-    const outFilePath = resolve(join(out, url + '.html'));
+    const outFilePath = resolve(join(out, url));
 
     await mkdir(dirname(outFilePath), { recursive: true });
     await writeFile(outFilePath, html);

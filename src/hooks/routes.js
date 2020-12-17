@@ -18,8 +18,8 @@ registerHook(
     let generatedRoutes = []
 
     const generateRoute = (fileFolder, fileName, other) => {
-      const url = join(fileFolder, slugify(fileName))
-      const location = new URL(url + '.html', baseUrl);
+      const url = join(fileFolder, slugify(fileName)) + '.html';
+      const location = new URL(url, baseUrl);
 
       return {
         url,
