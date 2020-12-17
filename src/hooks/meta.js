@@ -4,8 +4,18 @@ const { through } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')
 
 
+const deleteNullish = obj => {
+  Object.entries(obj)
+  .filter(([key, value]) => value === '' || value === null || value === undefined)
+  .forEach(([key, value]) => {
+    delete obj[key];
+  });
+
+  return obj;
+};
+
 const generateSeoTags = ({ url, location }, { title, slug, description, locale, canonical, author, copyright, keywords }) => ({
-  name: {
+  name: deleteNullish({
     slug: slug || url,
     title, // 60-70
     description, // -155
@@ -14,10 +24,10 @@ const generateSeoTags = ({ url, location }, { title, slug, description, locale, 
     author,
     copyright,
     keywords
-  }
+  })
 });
 const generateOpenGraphTags = ({ url }, { title, description, locale, canonical, og = {} }) => ({
-  property: {
+  property: deleteNullish({
     'og:title': title, // title to all sharable pages (40 mobile, 60 desktop)
     'og:url': canonical,
     'og:description': description, // (2-4 sentences) ... Get from SEO newbie to SEO pro in 8 simple steps.
@@ -30,10 +40,10 @@ const generateOpenGraphTags = ({ url }, { title, description, locale, canonical,
       ...res,
       ['og:' + prop]: value
     }), {})
-  }
+  })
 });
 const generateTwitterTags = ({ url }, { title, description, twitter = {}, og = {} }) => ({
-  name: {
+  name: deleteNullish({
     'twitter:card': 'summary',
     //TODO 'twitter:site': '',
     'twitter:title': title,
@@ -45,12 +55,12 @@ const generateTwitterTags = ({ url }, { title, description, twitter = {}, og = {
       ...res,
       ['twitter:' + prop]: value || og[prop]
     }), {})
-  }
+  })
 });
 const generateFbTags = () => ({
-  property: {
+  property: deleteNullish({
     'fb:admins': '',
-  }
+  })
 });
 
 const generateCacheTags = (route, { cache }) => {
@@ -70,12 +80,12 @@ const generateCacheTags = (route, { cache }) => {
 }
 const generateConfigTags = ({ url }, { robots, viewport, charset, locale }) => {
   return {
-    name: {
+    name: deleteNullish({
       robots: robots || 'index, follow',
       viewport: viewport || 'width=device-width, initial-scale=1.0, user-scalable=no',
       charset: charset || 'UTF-8',
       locale: locale || 'it-IT'
-    }
+    })
   }
 }
 
