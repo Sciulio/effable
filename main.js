@@ -10,6 +10,7 @@ const { mapDataFile, mapPartialFile, mapViewFile } = require('./src/utils/factor
 
 require("./src/hooks/fs")
 require("./src/hooks/hbs")
+require("./src/hooks/js")
 require("./src/hooks/md")
 require("./src/hooks/yaml")
 require("./src/hooks/metadata")
@@ -62,7 +63,8 @@ module.exports = async ({
     files: {
       data: await ([
         ...await promisedGlob(resolve(paths.data, '**/*.md')),
-        ...await promisedGlob(resolve(paths.data, '**/*.yaml'))
+        ...await promisedGlob(resolve(paths.data, '**/*.yaml')),
+        ...await promisedGlob(resolve(paths.data, '**/*.js'))
       ])
       .mapAsync(path => mapDataFile(paths.data, path)),
       partials: await (await promisedGlob(resolve(paths.partials, '**/*.hbs')))
