@@ -10,5 +10,7 @@ module.exports = {
   through: (...funcs) => (...args) => funcs.map(func => func(...args)),
   carry: (func, argsToSlice = 1) => (...args) => func(...args.slice(argsToSlice)),
 
-  filterByExt: (...extList) => ({ ext }) => extList.includes(ext)
+  filterByExt: (...extList) => ({ ext }) => extList.includes(ext),
+
+  flatten: lists => lists.reduce((list, sub) => [...list, ...sub], [])
 }

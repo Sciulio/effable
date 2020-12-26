@@ -14,7 +14,6 @@ require("./src/hooks/js")
 require("./src/hooks/md")
 require("./src/hooks/yaml")
 require("./src/hooks/metadata")
-require("./src/hooks/meta") // todo: as pluggable
 require("./src/hooks/routes")
 require("./src/hooks/sitemap")
 require("./src/hooks/assets")
@@ -159,12 +158,12 @@ module.exports = async ({
     })
   );
 
-  await Promise.all(
+  /*await Promise.all(
     ctx.routes
     .map(async route => {
-      await emitHook('routes.generate.meta', route, ctx)
+      await emitHook('routes.generate.metatags', route, ctx)
     })
-  );
+  );*/
 
 
   await emitHook('routes.prologo', ctx)

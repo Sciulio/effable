@@ -4,11 +4,14 @@ const { parse } = require("url");
 const { get } = require('lodash');
 
 const routesHelper = require('./routes');
+const { generateHtmlMetatags } = require('./metatags');
+
 
 // https://stackoverflow.com/a/37511463
 const normalizeWord = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 const getVarArgs = (args) => [...args].splice(0, args.length - 1)
 const getRootData = (args) => args[args.length - 1].data._parent.root
+
 
 Handlebars.registerHelper('object', function({ hash }) {
   //console.log("object-----------------")
@@ -134,4 +137,17 @@ Handlebars.registerHelper('extract-many', function() {
   const { data } = getRootData(arguments)
   return routesHelper["data-extract"](data, ...getVarArgs(arguments))
   //return extract(...getVarArgs(arguments), true);
+})
+
+// helpers:
+
+
+Handlebars.registerHelper('html-metatags', function() {
+  const { route, metadata } = getRootData(arguments)
+  const [ fullList = true ] = getVarArgs(arguments)
+
+  return new Handlebars.SafeString(
+    generateHtmlMetatags(route, metadata, fullList)
+    .join('\n')
+  );
 })

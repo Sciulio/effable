@@ -54,7 +54,7 @@ registerHook(
 registerHook(
   'routes.render.views',
   async (route, { data, routesSet, config: { host } }) => {
-    const { url, metadata, meta, contentFile, templateFile, contentData } = route;
+    const { url, metadata, metatags, contentFile, templateFile, contentData } = route;
 
     const context = {
       host,
@@ -68,7 +68,7 @@ registerHook(
       content: contentData,
 
       metadata,
-      meta
+      metatags
     };
 
     const template = templateFile.body || templateFile.content;
