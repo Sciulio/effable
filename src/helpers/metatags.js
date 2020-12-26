@@ -14,10 +14,13 @@ const deleteNullish = obj => {
   return obj;
 };
 
-const generateBaseMetatags = (_, { title }) => ({
+const generateBaseMetatags = (_, { title, charset = 'UTF-8' }) => ({
   title: [
     title
-  ]
+  ],
+  meta: {
+    charset
+  }
 });
 
 const generateSeoTags = ({ url, location }, { title, slug, description, locale, canonical, author, copyright, keywords }) => ({
@@ -35,7 +38,7 @@ const generateSeoTags = ({ url, location }, { title, slug, description, locale, 
   }
 });
 
-const generateCacheTags = (route, { cache, refresh, "content-type": contentType = "text/html; charset=UTF-8" }) => ({
+const generateCacheTags = (route, { cache, refresh, "content-type": contentType = "text/html;charset=UTF-8" }) => ({
   meta: {
     "http-equiv": {
       ...(cache === false && { "cache-control": "no-cache" }),
@@ -51,6 +54,7 @@ const generateConfigTags = ({ url }, { robots, viewport, charset, locale }) => {
     meta: {
       name: deleteNullish({
         robots: robots || 'index, follow',
+        // Mobile Metas
         viewport: viewport || 'width=device-width, initial-scale=1.0, user-scalable=no',
         charset: charset || 'UTF-8',
         locale: locale || 'it-IT'
@@ -128,10 +132,14 @@ module.exports = {
       if (Array.isArray(values)) {
         return values.map(inner => `<${tag}>${inner}</${tag}>`)
       }
-      return flatten(Object.entries(values)
-      .map(([attr, subValues]) => Object.entries(subValues)
-        .map(([attrValue, content]) => `<${tag} ${attr}="${attrValue}" content="${content}" />`)
-      ))
+      return flatten(
+        Object.entries(values)
+        .map(([attr, subValues]) => typeof subValues === 'object' ? Object.entries(subValues)
+          .map(([attrValue, content]) => `<${tag} ${attr}="${attrValue}" ${content ? `content="${content}"` : ''} />`) : [
+            `<${tag} ${attr}="${subValues}" />`
+          ]
+        )
+      )
     })
   )
 };
