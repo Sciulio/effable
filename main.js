@@ -158,13 +158,6 @@ module.exports = async ({
     })
   );
 
-  /*await Promise.all(
-    ctx.routes
-    .map(async route => {
-      await emitHook('routes.generate.metatags', route, ctx)
-    })
-  );*/
-
 
   await emitHook('routes.prologo', ctx)
 

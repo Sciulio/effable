@@ -107,9 +107,7 @@ const generateFbTags = () => ({
 });
 
 // todo: content-security-policy => parse all site to
-// todo: content-type => defaults to <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 // todo: default-style
-// todo: refresh => <meta http-equiv="refresh" content="30">
 
 const generateBindings = (route, metadata, fullList) => merge(
   ...through(
@@ -143,24 +141,3 @@ module.exports = {
     })
   )
 };
-
-/*
-registerHook(
-  'routes.generate.metatags',
-  async (route) => {
-    const { metadata } = route;
-
-    route.metatags = merge(
-      {},
-      ...through(
-        generateSeoTags,
-        generateOpenGraphTags,
-        generateTwitterTags,
-        generateFbTags,
-        generateCacheTags,
-        generateConfigTags
-      )(route, metadata)
-    );
-  }
-);
-*/
