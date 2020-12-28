@@ -92,8 +92,8 @@ module.exports = {
     return routesEach(({ __isData }) => __isData, ...arguments);
   },
   "routes-flat": routesFlat,
-  "data-extract": (dataSet, propsList, removeDuplicates = false) => {
-    let result = extract(dataSet, propsList.split('.'));
+  "data-extract": (dataSet, propPath, removeDuplicates = false) => {
+    let result = extract(dataSet, propPath.split('.'));
 
     if (removeDuplicates) {
       result = result

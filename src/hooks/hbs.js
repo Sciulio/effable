@@ -71,9 +71,9 @@ registerHook(
       metatags
     };
 
-    const template = templateFile.body || templateFile.content;
-    const compiled = Handlebars.compile(template);
+    const source = templateFile.body || templateFile.content;
+    const template = Handlebars.compile(source);
 
-    route.html = compiled(context);
+    route.html = template(context);
   }
 );

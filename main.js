@@ -171,13 +171,13 @@ module.exports = async ({
   await ctx.routes
   .forEachAsync(route => emitHook('routes.finale', route, ctx));
 
-  await emitHook('context.finale', ctx)
+  await emitHook('context.finale', ctx);
 
   await ctx.routes
   .forEachAsync(route => emitHook('routes.io.persist', route, ctx));
 
-  await emitHook('context.io.persist', ctx)
+  await emitHook('context.io.persist', ctx);
 
-
+  
   console.log('\nSuccess!')
 };
