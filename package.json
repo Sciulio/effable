@@ -1,6 +1,6 @@
 {
   "name": "@sciulio/effable",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "Simple static site generator.",
   "main": "main.js",
   "scripts": {
