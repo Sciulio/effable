@@ -1,16 +1,21 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
+const { Readable } = require('stream');
+
 const { and, carry, higher } = require('../utils/bfunctional')
 const { registerHook } = require('../utils/hooks')
 
-const { SitemapStream, streamToPromise } = require( 'sitemap' )
-const { Readable } = require( 'stream' )
+const { SitemapStream, streamToPromise } = require('sitemap')
 
 
 const siteMapEnabled = ({ config: { options: { siteMap = true } } }) => siteMap;
-const isIndexable = ({ metadata: { robots } }) => !robots || robots.indexOf("noindex") < 0 && robots.indexOf("no-index") < 0;
+const isIndexable = ({ metadata: { robots } }) => !robots || !~robots.indexOf("noindex") && !~robots.indexOf("no-index");
+
 const convertIoTimestamp = tsMs => tsMs; // new Date(tsMs).toString("yyyy-MM-dd").split("T")[0];
+
+const siteMapFileName = 'sitemap.xml';
+
 
 registerHook(
   'routes.finale',
@@ -29,14 +34,16 @@ registerHook(
 
     //todo: https://www.npmjs.com/package/sitemap
 
-    route.routeMap = {
-      url,
-      //todo: loc: domain + url
-      changefreq, // monthly, weekly, daily
-      priority,
-      lastmod // todo => to 2012-01-23
-      // img
-    }
+    route.bag = Object.assign(route.bag || {}, {
+      siteMapInfo: {
+        url,
+        //todo: loc: domain + url
+        changefreq, // monthly, weekly, daily
+        priority,
+        lastmod // todo => to 2012-01-23
+        // img
+      }
+    });
   }
 );
 
@@ -46,33 +53,37 @@ registerHook(
   async ctx => {
     const { routes, config: { host: { baseUrl } }} = ctx;
 
-    console.log('siteMap --------------------')
-
     // generate sitemap
     const routeMaps = routes
-    .filter(route => route.routeMap)
-    .map(route => route.routeMap);
+    .filter(route => route.bag && route.bag.siteMapInfo)
+    .map(route => route.bag.siteMapInfo);
 
     // Create a stream to write to
-    const stream = new SitemapStream({ hostname: baseUrl })
-    const dataBuffer = await streamToPromise(Readable.from(routeMaps).pipe(stream))
+    const siteMapDataBuffer = await streamToPromise(
+      Readable
+      .from(routeMaps)
+      .pipe(new SitemapStream({ hostname: baseUrl }))
+    );
     
-    ctx.siteMap = {
-      routes: routeMaps,
-      content: dataBuffer.toString()
-    };
+    ctx.bag = Object.assign(ctx.bag || {}, {
+      siteMap: {
+        routes: routeMaps,
+        content: siteMapDataBuffer.toString()
+      }
+    });
   }
-)
+);
 
 registerHook(
   'context.io.persist',
   siteMapEnabled,
   async ctx => {
-    const { siteMap, config: { paths: { out } } } = ctx;
+    const { bag: { siteMap }, config: { paths: { out } } } = ctx;
     
-    const outFilePath = resolve(join(out, 'sitemap.xml'));
+    const siteMapFilePath = resolve(join(out, siteMapFileName));
     
-    await mkdir(dirname(outFilePath), { recursive: true });
-    await writeFile(outFilePath, siteMap.content);
+    await mkdir(dirname(siteMapFilePath), { recursive: true });
+
+    await writeFile(siteMapFilePath, siteMap.content);
   }
 )

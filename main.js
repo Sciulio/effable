@@ -15,8 +15,9 @@ require("./src/hooks/md")
 require("./src/hooks/yaml")
 require("./src/hooks/metadata")
 require("./src/hooks/routes")
-require("./src/hooks/sitemap")
 require("./src/hooks/assets")
+require("./src/hooks/sitemap")
+require("./src/hooks/robots")
 
 
 const rootPath = dirname(require.main.filename || process.mainModule.filename);
