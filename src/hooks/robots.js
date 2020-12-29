@@ -4,12 +4,12 @@ const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs'
 const { not } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 const { parseUrl } = require('../utils/urls')
+const { isIndexable } = require('../utils/metadata');
 
 const robotstxt = require("generate-robotstxt");
 
 
 const robotsEnabled = ({ config: { options: { robots = true } } }) => robots;
-const isIndexable = ({ metadata: { robots } }) => !robots || !~robots.indexOf("noindex") && !~robots.indexOf("no-index");
 
 const siteMapFileName = 'sitemap.xml';
 const robotsFileName = 'robots.txt';

@@ -5,14 +5,12 @@ const { Readable } = require('stream');
 
 const { and, carry, higher } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
+const { isIndexable, convertIoTimestamp } = require('../utils/metadata');
 
-const { SitemapStream, streamToPromise } = require('sitemap')
+const { SitemapStream, streamToPromise } = require('sitemap');
 
 
 const siteMapEnabled = ({ config: { options: { siteMap = true } } }) => siteMap;
-const isIndexable = ({ metadata: { robots } }) => !robots || !~robots.indexOf("noindex") && !~robots.indexOf("no-index");
-
-const convertIoTimestamp = tsMs => tsMs; // new Date(tsMs).toString("yyyy-MM-dd").split("T")[0];
 
 const siteMapFileName = 'sitemap.xml';
 
