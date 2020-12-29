@@ -1,7 +1,7 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
-const { not } = require('../utils/bfunctional')
+const { not } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 const { parseUrl } = require('../utils/urls')
 

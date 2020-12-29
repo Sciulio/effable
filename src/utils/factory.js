@@ -1,7 +1,7 @@
 const { resolve, normalize, join, relative, sep, extname, basename, dirname } = require('path');
 const { readdir, readFile, writeFile, mkdir, stat } = require('fs').promises;
 
-const { higher } = require('./bfunctional')
+const { higher } = require('./functional')
 
 
 async function mapGlobFile(from, path) {

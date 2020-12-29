@@ -3,7 +3,7 @@ const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs'
 
 const { Readable } = require('stream');
 
-const { and, carry, higher } = require('../utils/bfunctional')
+const { and, carry, higher } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 
 const { SitemapStream, streamToPromise } = require('sitemap')

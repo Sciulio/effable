@@ -4,7 +4,7 @@ const { existsSync } = require('fs');
 
 const { set, get } = require('lodash');
 
-const { filterByExt } = require('../utils/bfunctional')
+const { filterByExt } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 const { pathToProperty, urlToPath } = require('../utils/fs')
 

@@ -1,6 +1,6 @@
 const { set, get } = require('lodash')
 
-const { filterByExt } = require('../utils/bfunctional')
+const { filterByExt } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 
 

@@ -1,6 +1,6 @@
 const { merge } = require('lodash');
 
-const { through, flatten } = require('../utils/bfunctional')
+const { through, flatten } = require('../utils/functional')
 const { registerHook } = require('../utils/hooks')
 
 
