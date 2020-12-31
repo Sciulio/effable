@@ -77,10 +77,32 @@ module.exports = async ({
     sitemap: []
   }
 
-  
+
+  const hookIoFiles = async (list, hook) => Promise.all(
+    list
+    .map(ioFile =>
+      emitHook(hook, ioFile, ctx)
+      .catch(err =>
+        console.error("ERROR:",
+          ioFile.path ||
+          ioFile.contentFile && ioFile.contentFile.path ||
+          ioFile.templateFile && ioFile.templateFile.path
+        ) ||
+        console.error(err) ||
+        Promise.reject(err)
+      )
+    )
+  );
+
+
   await emitHook('modules.init', initialization, ctx);
   
-  await Promise.all([
+  await hookIoFiles([
+    ...ctx.files.data,
+    ...ctx.files.partials,
+    ...ctx.files.views
+  ], 'file.read.content');
+  /*await Promise.all([
       ...ctx.files.data,
       ...ctx.files.partials,
       ...ctx.files.views
@@ -88,7 +110,7 @@ module.exports = async ({
     .map(async ioFile => {
       await emitHook('file.read.content', ioFile, ctx)
     })
-  );
+  );*/
   
   await Promise.all(
     ctx.files.data
@@ -144,30 +166,22 @@ module.exports = async ({
       await emitHook('files.partials.generate', ioFile, ctx)
     })
   );
-  
+
+  await hookIoFiles(ctx.files.views, 'routes.generate');
+  /*
   await Promise.all(
     ctx.files.views
-    .map(async ioFile => {
-      await emitHook('routes.generate', ioFile, ctx)
-    })
+    .map(ioFile => emitHook('routes.generate', ioFile, ctx))
   );
+  console.error('------------------------')
+  */
 
-  await Promise.all(
-    ctx.routes
-    .map(async route => {
-      await emitHook('routes.generate.metadata', route, ctx)
-    })
-  );
+  await hookIoFiles(ctx.routes, 'routes.generate.metadata');
 
 
   await emitHook('routes.prologo', ctx)
 
-  await Promise.all(
-    ctx.routes
-    .map(async route => {
-      await emitHook('routes.render.views', route, ctx)
-    })
-  );
+  await hookIoFiles(ctx.routes, 'routes.render.views');
 
   await ctx.routes
   .forEachAsync(route => emitHook('routes.finale', route, ctx));

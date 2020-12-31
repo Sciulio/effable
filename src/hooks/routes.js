@@ -51,11 +51,6 @@ registerHook(
           path = '',
           prop = ''
         } = collection;
-        
-        assertNotNullishString(
-          source,
-          `"collection.source" metadata parameter inside "${ioFile.path}" should be a path through data object properties. "*" is allowed (ex. "posts.*.tags.*")!`
-        )
 
         const itemsList = dataExtract(data, source, true);
 
@@ -71,11 +66,6 @@ registerHook(
           })
         );
       } else {
-        assertNotNullishString(
-          collection,
-          `"collection" metadata parameter inside "${ioFile.path}" should be a valid glob path inside "data" folder!`
-        );
-
         dataIoFiles = await fromPath(ctx, collection);
         
         generatedRoutes

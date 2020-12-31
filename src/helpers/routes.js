@@ -1,10 +1,16 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
-const { promisedGlob } = require("../utils/fs")
+const { promisedGlob } = require("../utils/fs");
+const { assertAssigned, assertNotNullishString } = require('../utils/asserts');
 
 
 const routesEach = (filter, routesSet, sortBy = null, take = null) => {
+  assertAssigned(
+    routesSet,
+    "RouteSet can not be null!"
+  );
+  
   let result = Object.entries(routesSet)
   .map(([_, value]) => value)
   .filter(filter);
@@ -40,6 +46,11 @@ const routesFlat = routes => {
 }
 
 const extract = (dataSet, propsList, result = []) => {
+  assertAssigned(
+    dataSet,
+    "DataSet to extract must not be null!"
+  )
+
   const isArray = Array.isArray(dataSet);
   if (propsList.length === 0) {
     if (isArray) {
@@ -53,10 +64,11 @@ const extract = (dataSet, propsList, result = []) => {
   let prop = propsList.shift();
   if (prop === '*') {
     prop = propsList.shift();
+
     return extract(isArray ? dataSet
-      .reduce((res, curr) => [
+      .reduce((res, dataItem) => [
         ...res,
-        ...curr.map(value => prop ? value[prop] : value)
+        ...dataItem.map(value => prop ? value[prop] : value)
       ], []) : Object.values(dataSet)
       .map(value => prop ? value[prop] : value),
       propsList, result
@@ -80,6 +92,11 @@ const extract = (dataSet, propsList, result = []) => {
 
 module.exports = {
   async fromPath(ctx, filePath) {
+    assertNotNullishString(
+      filePath,
+      '"FilePath" should be a valid glob path inside "data" folder!'
+    );
+
     const { files: { data: filesData }, config: { paths: { data: pathData } } } = ctx;
 
     const dataFilesPath = await promisedGlob(resolve(pathData, filePath))
@@ -93,6 +110,15 @@ module.exports = {
   },
   "routes-flat": routesFlat,
   "data-extract": (dataSet, propPath, removeDuplicates = false) => {
+    assertAssigned(
+      dataSet,
+      'DataSet param can not bu null!'
+    );
+    assertNotNullishString(
+      propPath,
+      'PropPath must be a path through data object properties ("*" allowed, ex. "posts.*.tags.*")!'
+    )
+
     let result = extract(dataSet, propPath.split('.'));
 
     if (removeDuplicates) {
