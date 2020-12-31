@@ -2,12 +2,12 @@ const { resolve, join, relative, sep, extname, basename, dirname } = require('pa
 const { URL } = require('url');
 
 const { get } = require('lodash');
+const slugify = require('slugify');
 
 const { emitHook, registerHook } = require('../utils/hooks')
+const { assertNotNullishString } = require('../utils/asserts');
 const routesHelper = require("../helpers/routes")
 const { fromPath, "data-extract" : dataExtract } = routesHelper;
-
-const slugify = require('slugify');
 
 
 registerHook(
@@ -46,7 +46,17 @@ registerHook(
       let dataIoFiles;
 
       if (typeof collection === 'object') {
-        const { source, path = '', prop = '' } = collection;
+        const {
+          source,
+          path = '',
+          prop = ''
+        } = collection;
+        
+        assertNotNullishString(
+          source,
+          `"collection.source" metadata parameter inside "${ioFile.path}" should be a path through data object properties. "*" is allowed (ex. "posts.*.tags.*")!`
+        )
+
         const itemsList = dataExtract(data, source, true);
 
         generatedRoutes
@@ -61,6 +71,11 @@ registerHook(
           })
         );
       } else {
+        assertNotNullishString(
+          collection,
+          `"collection" metadata parameter inside "${ioFile.path}" should be a valid glob path inside "data" folder!`
+        );
+
         dataIoFiles = await fromPath(ctx, collection);
         
         generatedRoutes
