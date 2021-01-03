@@ -67,12 +67,12 @@ const generateOpenGraphTags = ({ url }, { title, description, locale, canonical,
   meta: {
     property: deleteNullish({
       'og:title': title, // title to all sharable pages (40 mobile, 60 desktop)
-      'og:url': canonical,
+      'og:url': canonical || url,
       'og:description': description, // (2-4 sentences) ... Get from SEO newbie to SEO pro in 8 simple steps.
       'og:locale': locale,
       //'og:site_name': ...,
       'og:type': 'website', // website|article
-      // image => 1.91:1 ratio, min 1200x630
+      // todo: image => 1.91:1 ratio, min 1200x630
       ...Object.entries(og)
         .reduce((res, [prop, value]) => ({
           ...res,
