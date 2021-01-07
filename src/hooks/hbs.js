@@ -14,9 +14,10 @@ require('../helpers/hbs');
 
 const hooksFilter = filterByExt('.hbs');
 
-const tinyRouteFactory = ({ url, location, metadata, __isContent = false }) => ({
+const tinyRouteFactory = ({ url, location, metadata, __isContent = false, __isBinded = false }) => ({
   ...metadata,
   __isContent,
+  __isBinded,
   url,
   location
 });
