@@ -6,6 +6,19 @@ const { promisedGlob } = require("../utils/fs");
 const { assertAssigned, assertNotNullishString } = require('../utils/asserts');
 
 
+/*
+  [note:0]
+  v8's sort algorithm seems to be unstable, so we exclude sorting by undefined values
+  info at:
+  https://bugs.chromium.org/p/v8/issues/detail?id=90
+*/
+
+const sorter = sortBy => (a, b) => {
+  const sortA = get(a, sortBy);
+  const sortB = get(b, sortBy);
+  return (isNaN(sortA) ? sortA : parseFloat(sortA)) > (isNaN(sortB) ? sortB : parseFloat(sortB)) ? 1 : -1;
+}
+
 const routesEach = (filter, routesSet, sortBy = null, take = null) => {
   assertAssigned(
     routesSet,
@@ -18,7 +31,8 @@ const routesEach = (filter, routesSet, sortBy = null, take = null) => {
 
   if (sortBy) {
     result = result
-    .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+    .filter(item => typeof get(item, sortBy) !== 'undefined') // [note:0]
+    .sort(sorter(sortBy));
   }
   if (take) {
     return result.slice(0, take)
@@ -47,7 +61,8 @@ const routesFlat = (routes, sortBy = null) => {
 
   if (sortBy) {
     return result
-    .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+    .filter(item => typeof get(item, sortBy) !== 'undefined') // [note:0]
+    .sort(sorter(sortBy));
   }
 
   return result;
