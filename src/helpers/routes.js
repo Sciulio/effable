@@ -1,6 +1,7 @@
 const { resolve, join, relative, sep, extname, basename, dirname } = require('path');
 const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs');
 
+const { get } = require('lodash');
 const { promisedGlob } = require("../utils/fs");
 const { assertAssigned, assertNotNullishString } = require('../utils/asserts');
 
