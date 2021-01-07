@@ -7,7 +7,7 @@ const slugify = require('slugify');
 const { emitHook, registerHook } = require('../utils/hooks')
 const { assertNotNullishString } = require('../utils/asserts');
 const routesHelper = require("../helpers/routes")
-const { fromPath, "data-extract" : dataExtract } = routesHelper;
+const { fromPath, "data-extract_info": dataExtractInfo } = routesHelper;
 
 
 registerHook(
@@ -52,16 +52,19 @@ registerHook(
           prop = ''
         } = collection;
 
-        const itemsList = dataExtract(data, source, true);
+        const itemsList = dataExtractInfo(data, source, true);
 
         generatedRoutes
         .push(
           ...itemsList
-          .map(contentData => {
-            const fileName = prop ? get(contentData, prop) : contentData;
-            return generateRoute(folder + '/' + name.substring(1), fileName, {
+          .map(([propPath, contentData, contentFile]) => {
+            const pageName = prop ? get(contentData, prop) : contentData;
+            return generateRoute(folder + '/' + name.substring(1), pageName, {
+              // todo: ??? __isContent: true,
               __isBinded: true,
-              contentData: path ? get(contentData, path) : contentData
+              // todo: ??? __bindPath: propPath.join('.'),
+              contentData: path ? get(contentData, path) : contentData,
+              contentFile
             })
           })
         );

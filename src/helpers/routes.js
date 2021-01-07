@@ -90,6 +90,31 @@ const extract = (dataSet, propsList, result = []) => {
   );
 }
 
+const extractPaths = (dataSet, propsList, results = [], cpath = []) => {
+  if (!propsList.length) {
+    results.push(cpath);
+    return results;
+  }
+
+  let prop = propsList.shift();
+
+  if (prop == '*') {
+    if (Array.isArray(dataSet)) {
+      dataSet
+      .forEach((val, idx) => extractPaths(val, [...propsList], results, [...cpath, idx.toString()]))
+    } else {
+      Object.entries(dataSet)
+      .forEach(([key, val]) => extractPaths(val, [...propsList], results, [...cpath, key]))
+    }
+    return results;
+  //} else if (match = prop.match(/^\[(\d+)\]/)) {
+  }
+
+  cpath.push(prop);
+
+  return extractPaths(dataSet[prop], propsList, results, cpath);
+}
+
 module.exports = {
   async fromPath(ctx, filePath) {
     assertNotNullishString(
@@ -134,5 +159,29 @@ module.exports = {
       }, [])
     }
     return result;
+  },
+  "data-extract_info": (dataSet, propPath, removeDuplicates = false) => {
+    assertAssigned(
+      dataSet,
+      'DataSet param can not bu null!'
+    );
+    assertNotNullishString(
+      propPath,
+      'PropPath must be a path through data object properties ("*" allowed, ex. "posts.*.tags.*")!'
+    )
+    
+    return extractPaths(dataSet, propPath.split('.'))
+    .map(extractedPath => {
+      let ep = [...extractedPath];
+      let data;
+      while((data = get(dataSet, ep)) && (typeof data !== 'object' || !('__source' in data))) {
+        ep.splice(-1, 1)
+      }
+      return [
+        extractedPath,
+        get(dataSet, extractedPath),
+        data.__source
+      ]
+    })
   }
 };
