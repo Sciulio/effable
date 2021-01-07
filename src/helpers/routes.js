@@ -105,6 +105,9 @@ module.exports = {
   "routes-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isContent }) => __isContent, ...arguments);
   },
+  "routes-binded-each": function(routesSet, sortBy = null, take = null) {
+    return routesEach(({ __isBinded }) => __isBinded, ...arguments);
+  },
   "data-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isData }) => __isData, ...arguments);
   },

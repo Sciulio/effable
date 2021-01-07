@@ -75,6 +75,10 @@ Handlebars.registerHelper("routes-each", function() {
   return routesHelper['routes-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
 });
 
+Handlebars.registerHelper("routes-binded-each", function() {
+  return routesHelper['routes-binded-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
+});
+
 Handlebars.registerHelper("data-each", function() {
   return routesHelper['data-each'](...getVarArgs(arguments));
 });
