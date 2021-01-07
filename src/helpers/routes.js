@@ -26,8 +26,8 @@ const routesEach = (filter, routesSet, sortBy = null, take = null) => {
   return result;
 }
 
-const routesFlat = routes => {
-  return Object.entries(routes)
+const routesFlat = (routes, sortBy = null) => {
+  const result = Object.entries(routes)
   .map(([ key, value ]) => {
     const result = [
       value
@@ -44,6 +44,13 @@ const routesFlat = routes => {
   ], [])
   .filter(Boolean)
   .filter(({ __isContent }) => typeof __isContent !== 'undefined');
+
+  if (sortBy) {
+    return result
+    .sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+  }
+
+  return result;
 }
 
 const extract = (dataSet, propsList, result = []) => {
