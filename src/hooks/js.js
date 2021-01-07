@@ -28,6 +28,6 @@ registerHook(
       throw 'Multiple data with same name (different extension)!'
     }
     //set(data, prop, { ...metadata, body, __isData: true });
-    set(data, prop, { ...body, __isData: true });
+    set(data, prop, { ...body, __isData: true, __source: ioFile });
   }
 );

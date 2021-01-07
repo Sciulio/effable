@@ -15,6 +15,6 @@ registerHook(
     if (get(data, prop)) {
       throw 'Multiple data with same name (different extension)!'
     }
-    set(data, prop, { ...metadata, __isData: true });
+    set(data, prop, { ...metadata, __isData: true, __source: ioFile });
   }
 );
