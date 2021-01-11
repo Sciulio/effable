@@ -10,7 +10,8 @@ const { generateHtmlMetatags } = require('./metatags');
 // https://stackoverflow.com/a/37511463
 const normalizeWord = word => word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 const getVarArgs = (args) => [...args].splice(0, args.length - 1)
-const getRootData = (args) => args[args.length - 1].data._parent.root
+const getContext = (args) => args[args.length - 1]
+const getRootData = (args) => getContext(args).data._parent.root
 
 
 Handlebars.registerHelper('object', function({ hash }) {
@@ -59,7 +60,11 @@ Handlebars.registerHelper('route-isRelative', function(activeClasses, ...relUrls
 });
 Handlebars.registerHelper('route-a', function() {
   const { route: { location }, host: { baseUrl } } = getRootData(arguments);
-  const [ relUrl, title, activeClasses = '', additionalClasses = '', attrs = '' ] = getVarArgs(arguments); // [...arguments].splice(0, arguments.length - 1)
+  let [ relUrl, title, activeClasses = '', additionalClasses = '', attrs = '' ] = getVarArgs(arguments); // [...arguments].splice(0, arguments.length - 1)
+
+  if (relUrl.indexOf(baseUrl) === 0) {
+    relUrl = relUrl.replace(baseUrl, '');
+  }
 
   const url = new URL(relUrl, baseUrl);
   const isCurrent = url.href == location.href;
@@ -70,6 +75,14 @@ Handlebars.registerHelper('route-a', function() {
       href="${url.href}" ${attrs}>${title}</a>
   `);
 });
+
+Handlebars.registerHelper('route-urlify', function() {
+  const { host: { baseUrl } } = getRootData(arguments)
+  const urlParts = getVarArgs(arguments)
+
+  const url = parse(urlParts.map(normalizeWord).join('/')).href + '.html';
+  return new URL(url, baseUrl);
+})
 
 Handlebars.registerHelper("routes-each", function() {
   return routesHelper['routes-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
@@ -84,14 +97,6 @@ Handlebars.registerHelper("data-each", function() {
 });
 
 Handlebars.registerHelper('routes-flat', routesHelper['routes-flat']);
-
-Handlebars.registerHelper('urlify-route', function() {
-  const { host: { baseUrl } } = getRootData(arguments)
-  const urlParts = getVarArgs(arguments)
-
-  const url = parse(urlParts.map(normalizeWord).join('/')).href + '.html';
-  return new URL(url, baseUrl);
-})
 
 /*Handlebars.registerHelper('urlify-resx', function() {
   const { host: { resxUrl } } = getRootData(arguments);
