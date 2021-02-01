@@ -6,13 +6,12 @@ const { registerHook } = require('../utils/hooks')
 
 
 const isAbsoluteUrl = url => url.indexOf('http') == 0;
-const extrapolateUrls = (props, metadata, preUrl) => props
-.map(prop => [prop, metadata[prop]])
-.filter(([prop, value]) => prop in metadata && typeof value !== 'undefined' && value !== null)
-.filter(([prop, value]) => !isAbsoluteUrl(value))
+const extrapolateUrls = (matchers, metadata, preUrl) => Object.entries(metadata)
+.filter(([prop]) => matchers.some(matcher => typeof matcher === 'string' ? matcher == prop : prop.match(matcher)))
+.filter(([_, value]) => typeof value !== 'undefined' && value !== null)
+.filter(([_, value]) => !isAbsoluteUrl(value))
 .forEach(([prop, value]) => {
-  // todo
-  metadata[prop] = new URL(metadata[prop], preUrl).toString();
+  metadata[prop] = new URL(value, preUrl).toString();
 });
 /* todo: use converter
 example:
@@ -26,7 +25,7 @@ registerHook(
   'files.all.metadata',
   async ({ metadata }, { config: { host: { baseUrl, resxUrl } }}) => {
     extrapolateUrls(['canonical'], metadata, baseUrl);
-    extrapolateUrls(['image'], metadata, resxUrl);
+    extrapolateUrls(['image', /^image-/], metadata, resxUrl);
   }
 );
 
