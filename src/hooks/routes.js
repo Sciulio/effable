@@ -15,13 +15,17 @@ registerHook(
   async (ioFile, ctx) => {
     const { files: { data: filesData }, routes, data, config: { paths: { views: pathViews, data: pathData }, host: { baseUrl }} } = ctx;
     const { name, folder, isIndex, isLayout, isTemplate, metadata } = ioFile;
-    let generatedRoutes = []
-
+    let generatedRoutes = [];
+    
     const generateRoute = (fileFolder, fileName, other) => {
-      const url = join(fileFolder, slugify(fileName)) + '.html';
+      const slugifiedName = slugify(fileName);
+
+      const key = join(fileFolder, slugifiedName).replace(/\\/g, '.')
+      const url = join(fileFolder, slugifiedName) + '.html';
       const location = new URL(url, baseUrl);
 
       return {
+        key,
         url,
         location,
         templateFile: ioFile,

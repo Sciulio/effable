@@ -82,14 +82,21 @@ Handlebars.registerHelper('route-urlify', function() {
 
   const url = parse(urlParts.map(normalizeWord).join('/')).href + '.html';
   return new URL(url, baseUrl);
-})
+});
+Handlebars.registerHelper('asset-urlify', function() {
+  const { host: { resxUrl } } = getRootData(arguments);
+  const urlParts = getVarArgs(arguments)
+  
+  const url = parse(urlParts.map(normalizeWord).join('/')).href;
+  return new URL(url, resxUrl);
+});
 
 Handlebars.registerHelper("routes-each", function() {
-  return routesHelper['routes-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
+  return routesHelper['routes-each'](...getVarArgs(arguments));
 });
 
 Handlebars.registerHelper("routes-binded-each", function() {
-  return routesHelper['routes-binded-each'](...getVarArgs(arguments)); // each(({ __isContent }) => __isContent, ...getVarArgs(arguments));
+  return routesHelper['routes-binded-each'](...getVarArgs(arguments));
 });
 
 Handlebars.registerHelper("data-each", function() {
@@ -97,13 +104,6 @@ Handlebars.registerHelper("data-each", function() {
 });
 
 Handlebars.registerHelper('routes-flat', routesHelper['routes-flat']);
-
-/*Handlebars.registerHelper('urlify-resx', function() {
-  const { host: { resxUrl } } = getRootData(arguments);
-  const urlParts = getVarArgs(arguments)
-  const url = parse(urlParts.map(normalizeWord).join('/')).href;
-  return new URL(url, resxUrl);
-})*/
 
 const extract = (data, property, compareProperty = null, isMany = false) => {
   let result = Array.isArray(data) ? data : Object.entries(data)
