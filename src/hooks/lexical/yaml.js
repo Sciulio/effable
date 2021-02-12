@@ -1,7 +1,7 @@
 const { set, get } = require('lodash')
 
-const { filterByExt } = require('../utils/functional')
-const { registerHook } = require('../utils/hooks')
+const { filterByExt } = require('../../utils/functional')
+const { registerHook } = require('../../utils/hooks')
 
 
 const hooksFilter = filterByExt('.yaml');
@@ -15,6 +15,11 @@ registerHook(
     if (get(data, prop)) {
       throw 'Multiple data with same name (different extension)!'
     }
-    set(data, prop, { ...metadata, __isData: true, __source: ioFile });
+    set(data, prop, {
+      ...metadata,
+      key: prop,
+      __isData: true,
+      __source: ioFile
+    });
   }
 );

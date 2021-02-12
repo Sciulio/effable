@@ -4,9 +4,9 @@ const { URL } = require('url');
 const { get } = require('lodash');
 const slugify = require('slugify');
 
-const { emitHook, registerHook } = require('../utils/hooks')
-const { assertNotNullishString } = require('../utils/asserts');
-const routesHelper = require("../helpers/routes")
+const { emitHook, registerHook } = require('../../utils/hooks')
+const { assertNotNullishString } = require('../../utils/asserts');
+const routesHelper = require("../../helpers/routes")
 const { fromPath, "data-extract_info": dataExtractInfo } = routesHelper;
 
 
