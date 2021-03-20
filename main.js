@@ -107,11 +107,11 @@ module.exports = async ({
     ...ctx.files.views
   ], 'file.read.content');
   
-  await hookIoFiles(ctx.files.data, 'file.read.metadata.data');
-  await hookIoFiles(ctx.files.partials, 'file.read.metadata.partials');
-  await hookIoFiles(ctx.files.views, 'file.read.metadata.views');
+  await emitHooks(ctx.files.data, 'file.read.metadata.data');
+  await emitHooks(ctx.files.partials, 'file.read.metadata.partials');
+  await emitHooks(ctx.files.views, 'file.read.metadata.views');
   
-  await hookIoFiles([
+  await emitHooks([
     ...ctx.files.data,
     ...ctx.files.partials,
     ...ctx.files.views
