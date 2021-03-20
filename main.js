@@ -84,19 +84,17 @@ module.exports = async ({
   }
 
 
-  const emitHooks = async (list, hook) => Promise.all(
-    list
-    .map(ioFile =>
-      emitHook(hook, ioFile, ctx)
-      .catch(err =>
-        console.error("ERROR:",
-          ioFile.path ||
-          ioFile.contentFile && ioFile.contentFile.path ||
-          ioFile.templateFile && ioFile.templateFile.path
-        ) ||
-        console.error(err) ||
-        Promise.reject(err)
-      )
+  const emitHooks = async (list, hook) => list
+  .forEachAsync(ioFile =>
+    emitHook(hook, ioFile, ctx)
+    .catch(err =>
+      console.error("ERROR:",
+        ioFile.path ||
+        ioFile.contentFile && ioFile.contentFile.path ||
+        ioFile.templateFile && ioFile.templateFile.path
+      ) ||
+      console.error(err) ||
+      Promise.reject(err)
     )
   );
 
@@ -108,56 +106,16 @@ module.exports = async ({
     ...ctx.files.partials,
     ...ctx.files.views
   ], 'file.read.content');
-  /*await Promise.all([
-      ...ctx.files.data,
-      ...ctx.files.partials,
-      ...ctx.files.views
-    ]
-    .map(async ioFile => {
-      await emitHook('file.read.content', ioFile, ctx)
-    })
-  );*/
   
   await hookIoFiles(ctx.files.data, 'file.read.metadata.data');
   await hookIoFiles(ctx.files.partials, 'file.read.metadata.partials');
   await hookIoFiles(ctx.files.views, 'file.read.metadata.views');
-  /*
-  await Promise.all(
-    ctx.files.data
-    .map(async ioFile => {
-      await emitHook('file.read.metadata.data', ioFile, ctx)
-    })
-  );
-  await Promise.all(
-    ctx.files.partials
-    .map(async ioFile => {
-      await emitHook('file.read.metadata.partials', ioFile, ctx)
-    })
-  );
-  await Promise.all(
-    ctx.files.views
-    .map(async ioFile => {
-      await emitHook('file.read.metadata.views', ioFile, ctx)
-    })
-  );
-  */
   
   await hookIoFiles([
     ...ctx.files.data,
     ...ctx.files.partials,
     ...ctx.files.views
   ], 'files.all.metadata');
-  /*
-  await Promise.all([
-      ...ctx.files.data,
-      ...ctx.files.partials,
-      ...ctx.files.views
-    ]
-    .map(async ioFile => {
-      await emitHook('files.all.metadata', ioFile, ctx)
-    })
-  );
-  */
 
   
   await emitHooks(ctx.files.data, 'files.data.prepare');
@@ -179,13 +137,11 @@ module.exports = async ({
 
   await emitHooks(ctx.routes, 'routes.render.views');
 
-  await ctx.routes
-  .forEachAsync(route => emitHook('routes.finale', route, ctx));
+  await emitHooks(ctx.routes, 'routes.finale');
 
   await emitHook('context.finale', ctx);
 
-  await ctx.routes
-  .forEachAsync(route => emitHook('routes.io.persist', route, ctx));
+  await emitHooks(ctx.routes, 'routes.io.persist');
 
   await emitHook('context.io.persist', ctx);
 
