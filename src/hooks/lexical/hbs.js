@@ -4,12 +4,12 @@ const { existsSync } = require('fs');
 
 const { set, get } = require('lodash');
 
-const { filterByExt } = require('../utils/functional')
-const { registerHook } = require('../utils/hooks')
-const { pathToProperty, urlToPath } = require('../utils/fs')
+const { filterByExt } = require('../../utils/functional')
+const { registerHook } = require('../../utils/hooks')
+const { pathToProperty, urlToPath } = require('../../utils/fs')
 
 let Handlebars = require('handlebars')
-require('../helpers/hbs');
+require('../../helpers/hbs');
 
 
 const hooksFilter = filterByExt('.hbs');
@@ -18,6 +18,7 @@ const tinyRouteFactory = ({ url, location, contentData, metadata, __isContent = 
   ...metadata,
   __isContent,
   __isBinded,
+  key: urlToPath(url),
   url,
   location,
   content: contentData
@@ -40,11 +41,12 @@ registerHook(
 );
 
 registerHook(
-  'routes.prologo',
+  'routes.conclude',
   async ctx => {
     const { routes } = ctx;
 
-    ctx.routesSet = routes.map(tinyRouteFactory)
+    ctx.routesSet = routes
+    .map(tinyRouteFactory)
     .reduce((tinyRoutesSet, tinyRoute) => set(
       tinyRoutesSet,
       urlToPath(tinyRoute.url),

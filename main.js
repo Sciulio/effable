@@ -9,12 +9,14 @@ const { promisedGlob } = require("./src/utils/fs")
 const { mapDataFile, mapPartialFile, mapViewFile } = require('./src/utils/factory')
 
 require("./src/hooks/fs")
-require("./src/hooks/hbs")
-require("./src/hooks/js")
-require("./src/hooks/md")
-require("./src/hooks/yaml")
+require("./src/hooks/lexical/hbs")
+require("./src/hooks/lexical/js")
+require("./src/hooks/lexical/md")
+require("./src/hooks/lexical/yaml")
 require("./src/hooks/metadata")
-require("./src/hooks/routes")
+require("./src/hooks/domain/routes")
+require("./src/hooks/domain/data")
+require("./src/hooks/domain/partials")
 require("./src/hooks/assets")
 require("./src/hooks/sitemap")
 require("./src/hooks/robots")
@@ -82,7 +84,7 @@ module.exports = async ({
   }
 
 
-  const hookIoFiles = async (list, hook) => Promise.all(
+  const emitHooks = async (list, hook) => Promise.all(
     list
     .map(ioFile =>
       emitHook(hook, ioFile, ctx)
@@ -101,7 +103,7 @@ module.exports = async ({
 
   await emitHook('modules.init', initialization, ctx);
   
-  await hookIoFiles([
+  await emitHooks([
     ...ctx.files.data,
     ...ctx.files.partials,
     ...ctx.files.views
@@ -157,55 +159,25 @@ module.exports = async ({
   );
   */
 
-  await hookIoFiles(ctx.files.data, 'files.data.prepare');
-  await hookIoFiles(ctx.files.partials, 'files.partials.prepare');
-  /*
-  await Promise.all(
-    ctx.files.data
-    .map(async ioFile => {
-      await emitHook('files.data.prepare', ioFile, ctx)
-    })
-  );
-  await Promise.all(
-    ctx.files.partials
-    .map(async ioFile => {
-      await emitHook('files.partials.prepare', ioFile, ctx)
-    })
-  );
-  */
+  
+  await emitHooks(ctx.files.data, 'files.data.prepare');
+  await emitHooks(ctx.files.partials, 'files.partials.prepare');
 
-  await hookIoFiles(ctx.files.data, 'files.data.generate');
-  await hookIoFiles(ctx.files.partials, 'files.partials.generate');
-  /*
-  await Promise.all(
-    ctx.files.data
-    .map(async ioFile => {
-      await emitHook('files.data.generate', ioFile, ctx)
-    })
-  );
-  await Promise.all(
-    ctx.files.partials
-    .map(async ioFile => {
-      await emitHook('files.partials.generate', ioFile, ctx)
-    })
-  );
-  */
+  await emitHooks(ctx.files.data, 'files.data.generate');
+  await emitHooks(ctx.files.partials, 'files.partials.generate');
 
-  await hookIoFiles(ctx.files.views, 'routes.generate');
-  /*
-  await Promise.all(
-    ctx.files.views
-    .map(ioFile => emitHook('routes.generate', ioFile, ctx))
-  );
-  console.error('------------------------')
-  */
-
-  await hookIoFiles(ctx.routes, 'routes.generate.metadata');
+  await emitHooks(ctx.files.data, 'files.data.conclude');
+  await emitHooks(ctx.files.partials, 'files.partials.conclude');
 
 
-  await emitHook('routes.prologo', ctx)
+  await emitHooks(ctx.files.views, 'routes.generate');
 
-  await hookIoFiles(ctx.routes, 'routes.render.views');
+  await emitHooks(ctx.routes, 'routes.generate.metadata');
+
+
+  await emitHook('routes.conclude', ctx)
+
+  await emitHooks(ctx.routes, 'routes.render.views');
 
   await ctx.routes
   .forEachAsync(route => emitHook('routes.finale', route, ctx));

@@ -3,8 +3,8 @@ const { promises: { stat, readdir, readFile, writeFile, mkdir } } = require('fs'
 
 const { get, set } = require('lodash')
 
-const { filterByExt } = require('../utils/functional')
-const { registerHook } = require('../utils/hooks')
+const { filterByExt } = require('../../utils/functional')
+const { registerHook } = require('../../utils/hooks')
 
 
 const hooksFilter = filterByExt('.js');
@@ -28,6 +28,11 @@ registerHook(
       throw 'Multiple data with same name (different extension)!'
     }
     //set(data, prop, { ...metadata, body, __isData: true });
-    set(data, prop, { ...body, __isData: true, __source: ioFile });
+    set(data, prop, {
+      ...body,
+      key: prop,
+      __isData: true,
+      __source: ioFile
+    });
   }
 );

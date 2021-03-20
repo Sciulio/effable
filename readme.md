@@ -44,3 +44,11 @@ ex.
   }
 }
 ```
+
+### todo
+add modules as plugin
+ex: https://medium.com/@claudio_69833/how-i-compressed-images-with-jimp-and-imagemin-with-node-js-ff863a4c46ac
+
+### todo
+add and implement module PurgeCSS (possibly using raw methods)
+https://purgecss.com/configuration.html#options
