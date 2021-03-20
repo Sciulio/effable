@@ -5,21 +5,22 @@ const { and, not, filterByExt } = require('../utils/functional')
 const { pathToProperty } = require('../utils/fs')
 const { emitHook, registerHook } = require('../utils/hooks')
 
-let YAML = require('yaml');
-let mdMtadataParser = require('markdown-yaml-metadata-parser');
-
 
 registerHook(
   'modules.init',
-  async ({ yaml = yaml => yaml }) => {
-    YAML = yaml(YAML) || YAML;
+  async ({ yaml = yaml => yaml }, { services }) => {
+    const YAML = require('yaml');
+
+    services['yaml'] = yaml(YAML) || YAML;
   }
 );
 
 registerHook(
   'modules.init',
-  async ({ 'markdown-yaml-metadata-parser': mymp = mymp => mymp }) => {
-    mdMtadataParser = mymp(mdMtadataParser) || mdMtadataParser;
+  async ({ 'markdown-yaml-metadata-parser': mymp = mymp => mymp }, { services }) => {
+    const mdMtadataParser = require('markdown-yaml-metadata-parser');
+
+    services['mdMtadataParser'] = mymp(mdMtadataParser) || mdMtadataParser;
   }
 );
 
@@ -56,8 +57,8 @@ registerHook([
   ],
   //todo 'file.read.metadata.*',
   filterYaml,
-  async (ioFile) => {
-    const metadata = YAML.parse(ioFile.content);
+  async (ioFile, { services: { yaml }}) => {
+    const metadata = yaml.parse(ioFile.content);
 
     ioFile.metadata = metadata;
     ioFile.body = undefined;
@@ -70,7 +71,7 @@ registerHook([
     'file.read.metadata.views'
   ],
   filterContentWithMetadata,
-  async (ioFile) => {
+  async (ioFile, { services: { mdMtadataParser }}) => {
     const { metadata, content } = mdMtadataParser(ioFile.content);
 
     ioFile.metadata = metadata;
