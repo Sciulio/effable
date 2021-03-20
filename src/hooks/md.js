@@ -9,21 +9,17 @@ const { registerHook } = require('../utils/hooks')
 const MarkdownIt = require('markdown-it');
 
 
-let md; // = new MarkdownIt();
-
-const hooksFilter = filterByExt('.md');
-
 registerHook(
   'modules.init',
-  async ({ 'markdown-it': markdown_it = mit => new mit() }) => {
-    md = markdown_it(MarkdownIt);
+  async ({ 'markdown-it': markdown_it = mit => new mit() }, { services }) => {
+    services['md'] = markdown_it(MarkdownIt);
   }
 );
 
 registerHook(
   'files.data.generate',
-  hooksFilter,
-  async (ioFile, { config: { paths: { data: pathData } }, data }) => {
+  filterByExt('.md'),
+  async (ioFile, { config: { paths: { data: pathData } }, data, services: { md } }) => {
     const { prop, metadata } = ioFile;
     let { body } = ioFile;
 

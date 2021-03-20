@@ -60,6 +60,9 @@ module.exports = async ({
 
   const ctx = {
     config,
+    
+    services: {},
+
     files: {
       data: await ([
         ...await promisedGlob(resolve(paths.data, '**/*.md')),
@@ -72,6 +75,7 @@ module.exports = async ({
       views: await (await promisedGlob(resolve(paths.views, '**/*.hbs')))
       .mapAsync(path => mapViewFile(paths.views, path))
     },
+
     routes: [],
     data: {},
     sitemap: []
@@ -112,6 +116,10 @@ module.exports = async ({
     })
   );*/
   
+  await hookIoFiles(ctx.files.data, 'file.read.metadata.data');
+  await hookIoFiles(ctx.files.partials, 'file.read.metadata.partials');
+  await hookIoFiles(ctx.files.views, 'file.read.metadata.views');
+  /*
   await Promise.all(
     ctx.files.data
     .map(async ioFile => {
@@ -130,7 +138,14 @@ module.exports = async ({
       await emitHook('file.read.metadata.views', ioFile, ctx)
     })
   );
+  */
   
+  await hookIoFiles([
+    ...ctx.files.data,
+    ...ctx.files.partials,
+    ...ctx.files.views
+  ], 'files.all.metadata');
+  /*
   await Promise.all([
       ...ctx.files.data,
       ...ctx.files.partials,
@@ -140,7 +155,11 @@ module.exports = async ({
       await emitHook('files.all.metadata', ioFile, ctx)
     })
   );
+  */
 
+  await hookIoFiles(ctx.files.data, 'files.data.prepare');
+  await hookIoFiles(ctx.files.partials, 'files.partials.prepare');
+  /*
   await Promise.all(
     ctx.files.data
     .map(async ioFile => {
@@ -153,7 +172,11 @@ module.exports = async ({
       await emitHook('files.partials.prepare', ioFile, ctx)
     })
   );
+  */
 
+  await hookIoFiles(ctx.files.data, 'files.data.generate');
+  await hookIoFiles(ctx.files.partials, 'files.partials.generate');
+  /*
   await Promise.all(
     ctx.files.data
     .map(async ioFile => {
@@ -166,6 +189,7 @@ module.exports = async ({
       await emitHook('files.partials.generate', ioFile, ctx)
     })
   );
+  */
 
   await hookIoFiles(ctx.files.views, 'routes.generate');
   /*
