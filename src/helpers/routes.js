@@ -156,10 +156,10 @@ module.exports = {
   "routes-binded-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isBinded }) => __isBinded, ...arguments);
   },
+  "routes-flat": routesFlat,
   "data-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isData }) => __isData, ...arguments);
   },
-  "routes-flat": routesFlat,
   "data-extract": (dataSet, propPath, removeDuplicates = false) => {
     assertAssigned(
       dataSet,
