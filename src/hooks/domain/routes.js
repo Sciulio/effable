@@ -19,10 +19,13 @@ registerHook(
     
     const generateRoute = (fileFolder, fileName, other) => {
       const slugifiedName = slugify(fileName);
+      let joinedPath = join(fileFolder, slugifiedName);
 
-      const key = join(fileFolder, slugifiedName).replace(/\\/g, '.')
-      const url = join(fileFolder, slugifiedName) + '.html';
-      const location = new URL(url, baseUrl);
+      const key = joinedPath.replace(/\\/g, '.');
+      
+      joinedPath += '.html';
+      const url = joinedPath.replace(/\\/g, '/');
+      const location = new URL(joinedPath, baseUrl);
 
       return {
         key,
