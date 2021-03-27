@@ -151,7 +151,8 @@ module.exports = {
     return filesData.filter(({ path }) => dataFilesPath.includes(path))
   },
   "routes-each": function(routesSet, sortBy = null, take = null) {
-    return routesEach(({ __isContent }) => __isContent, ...arguments);
+    return routesEach(({ __isContent }) => typeof __isContent !== 'undefined', ...arguments);
+    //return routesEach(({ __isContent }) => __isContent, ...arguments);
   },
   "routes-binded-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isBinded }) => __isBinded, ...arguments);
