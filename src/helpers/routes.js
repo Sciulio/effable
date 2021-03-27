@@ -13,6 +13,9 @@ const { assertAssigned, assertNotNullishString } = require('../utils/asserts');
   https://bugs.chromium.org/p/v8/issues/detail?id=90
 */
 
+//todo: make a folder
+
+
 const sorter = sortBy => (a, b) => {
   const sortA = get(a, sortBy);
   const sortB = get(b, sortBy);
@@ -152,14 +155,19 @@ module.exports = {
   },
   "routes-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isContent }) => typeof __isContent !== 'undefined', ...arguments);
-    //return routesEach(({ __isContent }) => __isContent, ...arguments);
   },
   "routes-binded-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isBinded }) => __isBinded, ...arguments);
   },
-  "routes-flat": routesFlat,
   "data-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(({ __isData }) => __isData, ...arguments);
+  },
+  "routes-flat": routesFlat,
+  "routes-parent": () => {},
+  "route-parent": ({ key }, { routes }, toRoot) => {
+    console.log('key', key)
+    console.log('routes', routes)
+    //todo
   },
   "data-extract": (dataSet, propPath, removeDuplicates = false) => {
     assertAssigned(

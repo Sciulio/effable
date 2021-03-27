@@ -14,6 +14,10 @@ const getContext = (args) => args[args.length - 1]
 const getRootData = (args) => getContext(args).data._parent.root
 
 
+//todo: add handlebars registerHelper invocations inside handlebars initialization hook
+//todo: add implementation to ./routes.js
+
+
 Handlebars.registerHelper('object', function({ hash }) {
   //console.log("object-----------------")
   //console.log(hash)
@@ -137,6 +141,21 @@ const extract = (data, property, compareProperty = null, isMany = false) => {
   return result
   .filter(Boolean);
 }
+
+// todo: reqrite method declaration as: route-parent(toRoot: boolean)
+Handlebars.registerHelper('routes-parent-root', function() {
+  console.log(getRootData(arguments))
+  const { routes, route: route_ } = getRootData(arguments)
+  const { url } = getVarArgs(arguments)[0] || route_;
+
+  const paths = url.split('/');
+  const lastPart = paths.pop();
+  const rootPath = paths[0];
+  const flattenedRoutes = routesHelper['routes-flat'](routes);
+
+  return flattenedRoutes
+  .find(({ url }) => url == rootPath || lastPart)
+})
 
 Handlebars.registerHelper('extract', function() {
   return extract(...getVarArgs(arguments));

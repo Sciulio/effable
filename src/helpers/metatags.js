@@ -1,7 +1,6 @@
 const { merge } = require('lodash');
 
 const { through, flatten } = require('../utils/functional')
-const { registerHook } = require('../utils/hooks')
 
 
 const deleteNullish = obj => {
