@@ -163,11 +163,13 @@ module.exports = {
     return routesEach(({ __isData }) => __isData, ...arguments);
   },
   "routes-flat": routesFlat,
-  "routes-parent": () => {},
-  "route-parent": ({ key }, { routes }, toRoot) => {
-    console.log('key', key)
-    console.log('routes', routes)
-    //todo
+  "route-parent": ({ key, url }, { routes }, toRoot) => {
+    const paths = url.split('/');
+    const lastPart = paths.pop();
+    const rootPath = paths[0];
+
+    return routesFlat(routes)
+    .find(({ url }) => url == rootPath || lastPart);
   },
   "data-extract": (dataSet, propPath, removeDuplicates = false) => {
     assertAssigned(

@@ -41,26 +41,26 @@ Handlebars.registerHelper("toArray", function(data) {
   return Object.entries(data).map(([_, value]) => value);
 });
 
-Handlebars.registerHelper('route-isCurrent', function(activeClasses, relUrl) {
+Handlebars.registerHelper('route-isCurrent', function(/*returnValue, relUrl*/) {
   const { route: { location }, host: { baseUrl } } = getRootData(arguments); // this;
+  const [returnValue = true, relUrl = ''] = getVarArgs(arguments);
 
   const url = new URL(relUrl, baseUrl);
   const isCurrent = url.href == location.href;
   
-  if (typeof activeClasses === 'string') {
-    return isCurrent ? activeClasses : '';
-  }
-  return isCurrent;
+  return isCurrent ? returnValue : '';
 });
-Handlebars.registerHelper('route-isRelative', function(activeClasses, ...relUrls) {
+Handlebars.registerHelper('route-isRelative', function(/*returnValue, ...relUrls*/) {
   const { route: { location }, host: { baseUrl } } = getRootData(arguments);
+  const [returnValue, ...relUrls] = getVarArgs(arguments);
 
-  return relUrls
-  .splice(0, relUrls.length - 1)
+  const isCurrent = relUrls
   .some(relUrl => {
     const url = new URL(relUrl, baseUrl);
     return location.href.indexOf(url.href) === 0;
-  }) ? activeClasses : '';
+  });
+  
+  return isCurrent ? returnValue : '';
 });
 Handlebars.registerHelper('route-a', function() {
   const { route: { location }, host: { baseUrl } } = getRootData(arguments);
@@ -143,19 +143,20 @@ const extract = (data, property, compareProperty = null, isMany = false) => {
 }
 
 // todo: reqrite method declaration as: route-parent(toRoot: boolean)
-Handlebars.registerHelper('routes-parent-root', function() {
-  console.log(getRootData(arguments))
-  const { routes, route: route_ } = getRootData(arguments)
-  const { url } = getVarArgs(arguments)[0] || route_;
+Handlebars.registerHelper('route-parent', function() {
+  const hCtx = getRootData(arguments);
+  const { route } = hCtx;
+  const [cRoute = route] = getVarArgs(arguments);
 
-  const paths = url.split('/');
-  const lastPart = paths.pop();
-  const rootPath = paths[0];
-  const flattenedRoutes = routesHelper['routes-flat'](routes);
+  return routesHelper['route-parent'](cRoute, hCtx);
+});
+Handlebars.registerHelper('route-root', function() {
+  const hCtx = getRootData(arguments);
+  const { route } = hCtx;
+  const [cRoute = route] = getVarArgs(arguments);
 
-  return flattenedRoutes
-  .find(({ url }) => url == rootPath || lastPart)
-})
+  return routesHelper['route-parent'](cRoute, hCtx, true);
+});
 
 Handlebars.registerHelper('extract', function() {
   return extract(...getVarArgs(arguments));
