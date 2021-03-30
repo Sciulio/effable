@@ -22,6 +22,11 @@ const sorter = sortBy => (a, b) => {
   return (isNaN(sortA) ? sortA : parseFloat(sortA)) > (isNaN(sortB) ? sortB : parseFloat(sortB)) ? 1 : -1;
 }
 
+const isRoute = ({ __isContent }) => typeof __isContent !== 'undefined';
+const isContent = ({ __isContent }) => __isContent;
+const isBinded = ({ __isBinded }) => __isBinded;
+const isData = ({ __isData }) => __isData;
+
 const routesEach = (filter, routesSet, sortBy = null, take = null) => {
   assertAssigned(
     routesSet,
@@ -60,7 +65,7 @@ const routesFlat = (routes, sortBy = null) => {
     ...items
   ], [])
   .filter(Boolean)
-  .filter(({ __isContent }) => typeof __isContent !== 'undefined');
+  .filter(isRoute);
 
   if (sortBy) {
     return result
@@ -154,13 +159,13 @@ module.exports = {
     return filesData.filter(({ path }) => dataFilesPath.includes(path))
   },
   "routes-each": function(routesSet, sortBy = null, take = null) {
-    return routesEach(({ __isContent }) => typeof __isContent !== 'undefined', ...arguments);
+    return routesEach(isRoute, ...arguments);
   },
   "routes-binded-each": function(routesSet, sortBy = null, take = null) {
-    return routesEach(({ __isBinded }) => __isBinded, ...arguments);
+    return routesEach(isBinded, ...arguments);
   },
   "data-each": function(routesSet, sortBy = null, take = null) {
-    return routesEach(({ __isData }) => __isData, ...arguments);
+    return routesEach(isData, ...arguments);
   },
   "routes-flat": routesFlat,
   "route-parent": ({ key, url }, { routes }, toRoot) => {
