@@ -38,7 +38,7 @@ Handlebars.registerHelper("entries", function(data) {
   return Object.entries(data);
 });
 Handlebars.registerHelper("toArray", function(data) {
-  return Object.entries(data).map(([_, value]) => value);
+  return Object.values(data);
 });
 
 Handlebars.registerHelper('route-isCurrent', function(/*returnValue, relUrl*/) {
