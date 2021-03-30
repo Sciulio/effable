@@ -76,49 +76,36 @@ const routesFlat = (routes, sortBy = null) => {
   return result;
 }
 
-const extract = (dataSet, propsList, result = []) => {
-  assertAssigned(
-    dataSet,
-    "DataSet to extract must not be null!"
-  )
-
-  const isArray = Array.isArray(dataSet);
-  if (propsList.length === 0) {
-    if (isArray) {
-      result.push(...dataSet);
-    } else {
-      result.push(dataSet);
-    }
+const extractDeep = (data, props, flatten, result = []) => {
+  if (typeof data === 'undefined') {
     return result;
   }
 
-  let prop = propsList.shift();
+  if (!props.length) {
+    result.push(data);
+
+    return result;
+  }
+
+  const prop = props.shift();
+
   if (prop === '*') {
-    prop = propsList.shift();
+    let cResult = result;
 
-    return extract(isArray ? dataSet
-      .reduce((res, dataItem) => [
-        ...res,
-        ...dataItem.map(value => prop ? value[prop] : value)
-      ], []) : Object.values(dataSet)
-      .map(value => prop ? value[prop] : value),
-      propsList, result
-    );
+    if (!flatten) {
+      cResult = [];
+      result.push(cResult);
+    }
+    
+    Object.values(data)
+    .forEach(value => {
+      extractDeep(value, [...props], flatten, cResult);
+    });
+
+    return result;
   }
 
-  if (isArray) {
-    return extract(
-      prop.split(',').map(p => p.trim()).map(Number).map(pid => dataSet[pid]),
-      propsList,
-      result
-    );
-  }
-  
-  return extract(
-    dataSet[prop],
-    propsList,
-    result
-  );
+  return extractDeep(data[prop], props, flatten, result);
 }
 
 const extractPaths = (dataSet, propsList, results = [], cpath = []) => {
@@ -158,6 +145,16 @@ module.exports = {
     const dataFilesPath = await promisedGlob(resolve(pathData, filePath))
     return filesData.filter(({ path }) => dataFilesPath.includes(path))
   },
+  "route-parent": ({ key, url }, { routes }, toRoot) => {
+    // todo: implement toRoot
+    // todo: match removing only '.html' extension to url
+    const paths = url.split('/');
+    const lastPart = paths.pop();
+    const rootPath = paths[0];
+
+    return routesFlat(routes)
+    .find(({ url }) => url == rootPath || lastPart);
+  },
   "routes-each": function(routesSet, sortBy = null, take = null) {
     return routesEach(isRoute, ...arguments);
   },
@@ -168,14 +165,6 @@ module.exports = {
     return routesEach(isData, ...arguments);
   },
   "routes-flat": routesFlat,
-  "route-parent": ({ key, url }, { routes }, toRoot) => {
-    const paths = url.split('/');
-    const lastPart = paths.pop();
-    const rootPath = paths[0];
-
-    return routesFlat(routes)
-    .find(({ url }) => url == rootPath || lastPart);
-  },
   "data-extract": (dataSet, propPath, removeDuplicates = false) => {
     assertAssigned(
       dataSet,
@@ -186,7 +175,7 @@ module.exports = {
       'PropPath must be a path through data object properties ("*" allowed, ex. "posts.*.tags.*")!'
     )
 
-    let result = extract(dataSet, propPath.split('.'));
+    let result = extractDeep(dataSet, propPath.split('.'));
 
     if (removeDuplicates) {
       result = result

@@ -109,12 +109,12 @@ Handlebars.registerHelper("data-each", function() {
 
 Handlebars.registerHelper('routes-flat', routesHelper['routes-flat']);
 
-const extract = (data, property, compareProperty = null, isMany = false) => {
+const extract = (data, props, compareProps = null, isMany = false) => {
   let result = Array.isArray(data) ? data : Object.entries(data)
   .map(([_, value]) => value);
 
   result = result
-  .map(item => get(item, property));
+  .map(item => get(item, props));
 
   if (isMany) {
     result = result
@@ -124,17 +124,17 @@ const extract = (data, property, compareProperty = null, isMany = false) => {
     ], []);
   }
 
-  if (compareProperty) {
+  if (compareProps) {
     result = result
     .reduce((_list, value) => [
       ..._list,
-      (_list.some(v => get(v, compareProperty) === get(value, compareProperty)) ? null : value)
+      (_list.some(_item => get(_item, compareProps) === get(value, compareProps)) ? null : value)
     ], [])
   } else {
     result = result
     .reduce((_list, value) => [
       ..._list,
-      (_list.some(v => v === value) ? null : value)
+      (_list.some(_item => _item === value) ? null : value)
     ], [])
   }
 
