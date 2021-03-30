@@ -188,7 +188,7 @@ module.exports = {
     }
     return result;
   },
-  "data-extract_info": (dataSet, propPath, removeDuplicates = false) => {
+  "data-info-extract": (dataSet, propPath, removeDuplicates = false) => {
     assertAssigned(
       dataSet,
       'DataSet param can not bu null!'

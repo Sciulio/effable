@@ -7,7 +7,7 @@ const slugify = require('slugify');
 const { emitHook, registerHook } = require('../../utils/hooks')
 const { assertNotNullishString } = require('../../utils/asserts');
 const routesHelper = require("../../helpers/routes")
-const { fromPath, "data-extract_info": dataExtractInfo } = routesHelper;
+const { fromPath, "data-info-extract": dataExtractInfo } = routesHelper;
 
 
 registerHook(
